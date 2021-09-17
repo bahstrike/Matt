@@ -406,8 +406,10 @@ namespace Matt
 
         private void format_CheckedChanged(object sender, EventArgs e)
         {
-            // if 16bit disable the colormap group
-            colormapGroup.Enabled = (CurrentFormat == Format.Solid) || (CurrentFormat == Format.Paletted);
+            bool is8bit = (CurrentFormat == Format.Solid) || (CurrentFormat == Format.Paletted);
+
+            colormapGroup.Enabled = is8bit;
+            originalKeepColormap.Enabled = is8bit;
 
             Reprocess();
         }
@@ -421,7 +423,7 @@ namespace Matt
                 if (forceOriginalColormap == null)
                     return;
 
-                originalKeepColormap.Text = "Clear Saved Colormap";
+                originalKeepColormap.Text = $"Clear: {forceOriginalColormap.Name}";
             } else
             {
                 originalKeepColormap.Text = "Keep Current Colormap";
