@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using Smith;
 
 namespace Matt
 {
@@ -95,9 +96,9 @@ namespace Matt
 #endif
         }
 
-        Smith.Colormap GetCurrentColormap()
+        Colormap GetCurrentColormap()
         {
-            Smith.Colormap cmp = gobColormap.SelectedItem as Smith.Colormap;
+            Colormap cmp = gobColormap.SelectedItem as Colormap;
             if (cmp != null)
                 return cmp;
 
@@ -107,7 +108,7 @@ namespace Matt
             if (!Path.GetExtension(cmpOrGobPath.Text).Equals(".cmp", StringComparison.InvariantCultureIgnoreCase))
                 return null;
 
-            cmp = new Smith.Colormap(Path.GetFileName(cmpOrGobPath.Text), File.OpenRead(cmpOrGobPath.Text));
+            cmp = new Colormap(Path.GetFileName(cmpOrGobPath.Text), File.OpenRead(cmpOrGobPath.Text));
 
             return cmp;
         }
@@ -118,10 +119,10 @@ namespace Matt
 
             if(File.Exists(cmpFile) && Path.GetExtension(cmpFile).Equals(".gob", StringComparison.InvariantCultureIgnoreCase))
             {
-                using (Smith.GOB gob = new Smith.GOB(Path.GetFileName(cmpFile), File.OpenRead(cmpFile)))
+                using (GOB gob = new GOB(Path.GetFileName(cmpFile), File.OpenRead(cmpFile)))
                     foreach (string s in gob.GetFilesWithExtension("cmp"))
                     {
-                        Smith.Colormap cmp = new Smith.Colormap(Path.GetFileName(s), gob[s]);
+                        Colormap cmp = new Colormap(Path.GetFileName(s), gob[s]);
 
                         gobColormap.Items.Add(cmp);
                     }
@@ -169,7 +170,7 @@ namespace Matt
         private void Matt_Load(object sender, EventArgs e)
         {
             // load config
-            using (Smith.INIFile ini = new Smith.INIFile(INIFile))
+            using (INIFile ini = new INIFile(INIFile))
             {
                 cmpOrGobPath.Text = ini.GetKey("General", "CMPorGOB", string.Empty);
 
@@ -189,7 +190,7 @@ namespace Matt
         private void Matt_FormClosing(object sender, FormClosingEventArgs e)
         {
             // save config
-            using (Smith.INIFile ini = new Smith.INIFile(INIFile))
+            using (INIFile ini = new INIFile(INIFile))
             {
                 ini.WriteKey("General", "CMPorGOB", cmpOrGobPath.Text);
                 ini.WriteKey("General", "GOBCMPIndex", gobColormap.SelectedIndex.ToString());
@@ -204,7 +205,7 @@ namespace Matt
 
         void UpdateCMP()
         {
-            Smith.Colormap cmp = GetCurrentColormap();
+            Colormap cmp = GetCurrentColormap();
             if(cmp == null)
             {
                 pictureBox3.Image = null;
@@ -217,7 +218,7 @@ namespace Matt
             Bitmap bmp = new Bitmap(width, height);
             using (Graphics gfx = Graphics.FromImage(bmp))
             {
-                gfx.FillRectangle(new HatchBrush(HatchStyle.LightDownwardDiagonal, Color.FromArgb(0, 0, 0), Color.FromArgb(60, 60, 60)), 0, 0, width, height);
+                FillRectEmpty(gfx, new Rectangle(0, 0, width, height));
 
                 for(int i=0; i<256; i++)
                 {
@@ -249,25 +250,25 @@ namespace Matt
             }
         }
 
-        public Smith.Material LoadOriginalAsMaterial()
+        public Material LoadOriginalAsMaterial()
         {
             if (!OpenedMAT)
                 return null;
 
-            return new Smith.Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
+            return new Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
         }
 
-        public Bitmap GenerateBitmap(out bool failedToNoColormap, Smith.Colormap cmpOverride=null)
+        public Bitmap GenerateBitmap(out bool failedToNoColormap, Colormap cmpOverride=null, Material matOverride=null)
         {
             failedToNoColormap = false;
 
             try
             {
-                if (!OpenedMAT)
+                if (!OpenedMAT && matOverride == null)
                     return (Bitmap)Bitmap.FromFile(OpenedImageFilePath);
 
-                Smith.Material mat = LoadOriginalAsMaterial();
-                Smith.Colormap cmp = cmpOverride ?? GetCurrentColormap();
+                Material mat = matOverride ?? LoadOriginalAsMaterial();
+                Colormap cmp = cmpOverride ?? GetCurrentColormap();
 
                 Bitmap bmp;
                 mat.GenerateBitmap(out bmp, cmp, out failedToNoColormap);
@@ -322,7 +323,7 @@ namespace Matt
                             CurrentFormat = Format.RGB565;
                     } else
                     {
-                        Smith.Material mat = LoadOriginalAsMaterial();
+                        Material mat = LoadOriginalAsMaterial();
 
                         if (autoChangeOptions)
                         {
@@ -368,9 +369,136 @@ namespace Matt
                 return;
             }
 
+
+            // generate a new Material from current "original" bitmap.. this has already been created in picturebox
+            Bitmap sourceBitmap = pictureBox1.Image as Bitmap;
+            if (sourceBitmap == null)
+                return;
+
+
+            Material mat = GenerateOutputMat(sourceBitmap);
+
+
             bool needColormap;
-            pictureBox2.Image = GenerateBitmap(out needColormap, null/*no override*/);
+            pictureBox2.Image = GenerateBitmap(out needColormap, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
+        }
+
+        unsafe Material GenerateOutputMat(Bitmap bmp)
+        {
+            Format fmt = CurrentFormat;
+            Colormap cmp = GetCurrentColormap();
+
+            // if 8bit we need a colormap
+            if (cmp == null && (fmt == Format.Solid || fmt == Format.Paletted))
+                return null;
+
+
+            Material mat = new Material();
+
+            switch(fmt)
+            {
+                case Format.Solid:
+                    // not supported yet
+                    break;
+
+                case Format.Paletted:
+                    mat.ColorBits = 8;
+                    break;
+
+                case Format.RGB565:
+                    mat.ColorBits = 16;
+                    mat.RedBits = 5;
+                    mat.GreenBits = 6;
+                    mat.BlueBits = 5;
+                    break;
+
+                case Format.ARGB1555:
+                    mat.ColorBits = 16;
+                    mat.RedBits = 5;
+                    mat.GreenBits = 5;
+                    mat.BlueBits = 5;
+                    break;
+
+                case Format.ARGB4444:
+                    mat.ColorBits = 16;
+                    mat.RedBits = 4;
+                    mat.GreenBits = 4;
+                    mat.BlueBits = 4;
+                    break;
+            }
+
+
+            Material.MaterialHeader mh = new Material.MaterialHeader();
+            mat.Materials.Add(mh);
+
+            mh.colorIndex = 0;
+            mh.textureId = 0;
+
+
+
+
+            Material.TextureHeader th = new Material.TextureHeader();
+            mat.Textures.Add(th);
+
+            // precache dimensions since the property accessor is horrendously slow
+            int bmpWidth = bmp.Width;
+            int bmpHeight = bmp.Height;
+
+
+            // one mipmap for now
+            th.Width = bmpWidth;
+            th.Height = bmpHeight;
+            th.Transparent = false;// donno
+
+            byte[] mipData = new byte[th.Width * th.Height * (mat.ColorBits / 8)];
+            fixed(byte* _dst = mipData)
+            {
+                byte* dst = _dst;
+
+                BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, bmpWidth, bmpHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+
+                // would be faster to have loops for each format rather than embedding a switch() in deepest loop..  but lazy
+                for(int y=0; y<bmpHeight; y++)
+                {
+                    byte* src = (byte*)((long)bmdat.Scan0 + (long)(y * bmdat.Stride));
+
+                    for (int x=0; x<bmpWidth; x++)
+                    {
+                        switch(fmt)
+                        {
+                            case Format.Paletted:
+                                {
+                                    *(dst++) = (byte)cmp.FindClosestColor(src[2], src[1], src[0]);
+                                }
+                                break;
+
+                            case Format.RGB565:
+                                {
+                                    ushort pixelword = 0;
+
+                                    pixelword |= (ushort)(src[0] * 0x1F / 255);//blue
+                                    pixelword |= (ushort)((src[1] * 0x3F / 255) << 5);//green
+                                    pixelword |= (ushort)((src[2] * 0x1F / 255) << 11);//red
+
+                                    *((ushort*)dst) = pixelword;
+                                    dst += 2;
+                                }
+                                break;
+                        }
+
+                        src += 4;
+                    }
+                }
+
+
+                bmp.UnlockBits(bmdat);
+            }
+            th.MipmapData.Add(mipData);
+
+
+
+            return mat;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -437,7 +565,7 @@ namespace Matt
             Reprocess();
         }
 
-        Smith.Colormap forceOriginalColormap = null;
+        Colormap forceOriginalColormap = null;
         private void originalKeepColormap_Click(object sender, EventArgs e)
         {
             if(forceOriginalColormap == null)
@@ -475,6 +603,25 @@ namespace Matt
                 return;
 
             OpenOriginal(files[0]);
+        }
+
+        void FillRectEmpty(Graphics gfx, Rectangle rc)
+        {
+            gfx.FillRectangle(new HatchBrush(HatchStyle.LightDownwardDiagonal, Color.FromArgb(0, 0, 0), Color.FromArgb(60, 60, 60)), rc);
+        }
+
+        private void image_Paint(object sender, PaintEventArgs e)
+        {
+            PictureBox pb = sender as PictureBox;
+            if (pb == null)
+                return;
+
+            // if we have an image to draw, do nothing
+            if (pb.Image != null)
+                return;
+
+            // no image.. fill in some "nothing here" background
+            FillRectEmpty(e.Graphics, pb.ClientRectangle);
         }
     }
 }

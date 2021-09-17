@@ -35,6 +35,38 @@ namespace Smith
             return Name;
         }
 
+        public int FindClosestColor(int r, int g, int b)
+        {
+            int smallestDiffIndex = 0;
+
+            for(int i=1; i<256; i++)
+            {
+                int bestDiff = DetermineColorDiff(smallestDiffIndex, r, g, b);
+                int curDiff = DetermineColorDiff(i, r, g, b);
+
+                if (curDiff < bestDiff)
+                    smallestDiffIndex = i;
+
+                // if diff is 0 then dont bother checking more
+                if (curDiff == 0)
+                    break;
+            }
+
+            return smallestDiffIndex;
+        }
+
+        private int DetermineColorDiff(int i, int r, int g, int b)
+        {
+            RGB p = Palette[i];
+
+            int diff = 0;
+            diff += Math.Abs((int)p.R - r);
+            diff += Math.Abs((int)p.G - g);
+            diff += Math.Abs((int)p.B - b);
+
+            return diff;
+        }
+
         public Colormap(string n, Stream s)
         {
             Name = n;

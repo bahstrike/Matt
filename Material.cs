@@ -13,13 +13,13 @@ namespace Smith
 
         public const int ColorMaterialSize = 64;
 
-        private class MaterialHeader
+        public class MaterialHeader
         {
             public int colorIndex;
             public int textureId;
         }
 
-        private class TextureHeader
+        public class TextureHeader
         {
             public int Width;
             public int Height;
@@ -33,8 +33,8 @@ namespace Smith
         public int GreenBits = 0;
         public int RedBits = 0;
 
-        private List<MaterialHeader> Materials = new List<MaterialHeader>();
-        private List<TextureHeader> Textures = new List<TextureHeader>();
+        public List<MaterialHeader> Materials = new List<MaterialHeader>();
+        public List<TextureHeader> Textures = new List<TextureHeader>();
 
         public int Width
         {
@@ -290,6 +290,11 @@ namespace Smith
             bmp.UnlockBits(bmdat);
 
             return;
+        }
+
+        public Material()
+        {
+
         }
 
         public Material(string n, Stream s)
