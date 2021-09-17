@@ -288,6 +288,8 @@
             this.Controls.Add(this.matToolsGroup);
             this.Name = "Matt";
             this.Text = "Matt - BAH 2021";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
+            this.Load += new System.EventHandler(this.Matt_Load);
             this.matToolsGroup.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();

@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Colormap.cs" />
     <Compile Include="GOB.cs" />
+    <Compile Include="INIFile.cs" />
     <Compile Include="Material.cs" />
     <Compile Include="Matt.cs">
       <SubType>Form</SubType>

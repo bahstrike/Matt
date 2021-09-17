@@ -13,6 +13,14 @@ namespace Matt
 {
     public partial class Matt : Form
     {
+        private string INIFile
+        {
+            get
+            {
+                return Path.Combine(Directory.GetCurrentDirectory(), "Matt.ini");
+            }
+        }
+
         public Matt()
         {
             InitializeComponent();
@@ -117,6 +125,32 @@ namespace Matt
                 return;
 
             cmpOrGobPath.Text = ofd.FileName;
+        }
+
+        private void Matt_Load(object sender, EventArgs e)
+        {
+            // load config
+            using (Smith.INIFile ini = new Smith.INIFile(INIFile))
+            {
+                cmpOrGobPath.Text = ini.GetKey("General", "CMPorGOB", string.Empty);
+
+                int cmpIndex;
+                if(int.TryParse(ini.GetKey("General", "GOBCMPIndex", string.Empty), out cmpIndex))
+                {
+                    if (cmpIndex >= 0 && cmpIndex < gobColormap.Items.Count)
+                        gobColormap.SelectedIndex = cmpIndex;
+                }
+            }   
+        }
+
+        private void Matt_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            // save config
+            using (Smith.INIFile ini = new Smith.INIFile(INIFile))
+            {
+                ini.WriteKey("General", "CMPorGOB", cmpOrGobPath.Text);
+                ini.WriteKey("General", "GOBCMPIndex", gobColormap.SelectedIndex.ToString());
+            }
         }
     }
 }
