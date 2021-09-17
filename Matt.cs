@@ -27,18 +27,6 @@ namespace Matt
             InitializeComponent();
         }
 
-        private void openImage_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "All Images|*.bmp;*.png;*.jpg;*.jpeg;*.gif";
-
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            pictureBox1.Image = Bitmap.FromFile(ofd.FileName);
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             Bitmap bmp = pictureBox1.Image as Bitmap;
@@ -66,30 +54,6 @@ namespace Matt
             cmp = new Smith.Colormap(Path.GetFileName(cmpOrGobPath.Text), File.OpenRead(cmpOrGobPath.Text));
 
             return cmp;
-        }
-
-        private void openMat_Click(object sender, EventArgs e)
-        {
-            OpenFileDialog ofd = new OpenFileDialog();
-
-            ofd.Filter = "Material File (*.mat)|*.mat";
-
-            if (ofd.ShowDialog() != DialogResult.OK)
-                return;
-
-            Smith.Material mat = new Smith.Material(Path.GetFileName(ofd.FileName), File.OpenRead(ofd.FileName));
-            Smith.Colormap cmp = GetCurrentColormap();
-
-            if (mat.ColorBits == 8 && cmp == null)
-            {
-                MessageBox.Show($"{Path.GetFileName(ofd.FileName)} is 8-bit but no colormap has been selected");
-                return;
-            }
-
-            Bitmap bmp;
-            mat.GenerateBitmap(out bmp, cmp);
-
-            pictureBox1.Image = bmp;
         }
 
         private void textBox1_TextChanged(object sender, EventArgs e)
@@ -128,6 +92,16 @@ namespace Matt
             OpenFileDialog ofd = new OpenFileDialog();
 
             ofd.Filter = "Colormap Sources (*.cmp, *.gob)|*.cmp;*.gob";
+            ofd.RestoreDirectory = true;
+
+            try
+            {
+                ofd.InitialDirectory = Path.GetDirectoryName(cmpOrGobPath.Text);
+            }
+            catch
+            {
+
+            }
 
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
@@ -202,6 +176,66 @@ namespace Matt
             }
 
             pictureBox3.Image = bmp;
+        }
+
+        public string OpenedImageFilePath = string.Empty;
+        public bool OpenedMAT
+        {
+            get
+            {
+                return OpenedImageFilePath.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase);
+            }
+        }
+
+        public void ReloadOriginal()
+        {
+            try
+            {
+                if (!OpenedMAT)
+                {
+                    pictureBox1.Image = Bitmap.FromFile(OpenedImageFilePath);
+                }
+                else
+                {
+                    Smith.Material mat = new Smith.Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
+                    Smith.Colormap cmp = GetCurrentColormap();
+
+                    if (mat.ColorBits == 8 && cmp == null)
+                    {
+                        MessageBox.Show($"{Path.GetFileName(OpenedImageFilePath)} is 8-bit but no colormap has been selected");
+                        return;
+                    }
+
+                    Bitmap bmp;
+                    mat.GenerateBitmap(out bmp, cmp);
+
+                    pictureBox1.Image = bmp;
+                }
+            }
+            catch
+            {
+                pictureBox1.Image = null;
+                pictureBox2.Image = null;
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void openButton_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+
+            ofd.Filter = "All Images|*.mat;*.bmp;*.png;*.jpg;*.jpeg;*.gif|Material Files (*.mat)|*.mat|Image Files (*.bmp;*.png;*.jpg;*.jpeg;*.gif)|*.bmp;*.png;*.jpg;*.jpeg;*.gif";
+
+            if (ofd.ShowDialog() != DialogResult.OK)
+                return;
+
+            OpenedImageFilePath = ofd.FileName;
+
+            ReloadOriginal();
         }
     }
 }

@@ -28,21 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.matToolsGroup = new System.Windows.Forms.GroupBox();
-            this.openMat = new System.Windows.Forms.Button();
-            this.saveMat = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
-            this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.openImage = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.button1 = new System.Windows.Forms.Button();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.gobColormap = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,44 +44,14 @@
             this.button2 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
-            this.matToolsGroup.SuspendLayout();
+            this.openButton = new System.Windows.Forms.Button();
+            this.saveButton = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
-            // 
-            // matToolsGroup
-            // 
-            this.matToolsGroup.Controls.Add(this.saveMat);
-            this.matToolsGroup.Controls.Add(this.openMat);
-            this.matToolsGroup.Location = new System.Drawing.Point(12, 12);
-            this.matToolsGroup.Name = "matToolsGroup";
-            this.matToolsGroup.Size = new System.Drawing.Size(179, 123);
-            this.matToolsGroup.TabIndex = 0;
-            this.matToolsGroup.TabStop = false;
-            this.matToolsGroup.Text = "MAT File";
-            // 
-            // openMat
-            // 
-            this.openMat.Location = new System.Drawing.Point(6, 19);
-            this.openMat.Name = "openMat";
-            this.openMat.Size = new System.Drawing.Size(75, 23);
-            this.openMat.TabIndex = 0;
-            this.openMat.Text = "Open *.mat";
-            this.openMat.UseVisualStyleBackColor = true;
-            this.openMat.Click += new System.EventHandler(this.openMat_Click);
-            // 
-            // saveMat
-            // 
-            this.saveMat.Location = new System.Drawing.Point(6, 48);
-            this.saveMat.Name = "saveMat";
-            this.saveMat.Size = new System.Drawing.Size(75, 23);
-            this.saveMat.TabIndex = 1;
-            this.saveMat.Text = "Save *.mat";
-            this.saveMat.UseVisualStyleBackColor = true;
             // 
             // pictureBox1
             // 
@@ -127,33 +91,13 @@
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
             // 
-            // groupBox1
-            // 
-            this.groupBox1.Controls.Add(this.openImage);
-            this.groupBox1.Location = new System.Drawing.Point(197, 12);
-            this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(200, 123);
-            this.groupBox1.TabIndex = 4;
-            this.groupBox1.TabStop = false;
-            this.groupBox1.Text = "Image File";
-            // 
-            // openImage
-            // 
-            this.openImage.Location = new System.Drawing.Point(6, 19);
-            this.openImage.Name = "openImage";
-            this.openImage.Size = new System.Drawing.Size(75, 23);
-            this.openImage.TabIndex = 0;
-            this.openImage.Text = "Open image";
-            this.openImage.UseVisualStyleBackColor = true;
-            this.openImage.Click += new System.EventHandler(this.openImage_Click);
-            // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.radioButton4);
             this.groupBox2.Controls.Add(this.radioButton3);
             this.groupBox2.Controls.Add(this.radioButton2);
             this.groupBox2.Controls.Add(this.radioButton1);
-            this.groupBox2.Location = new System.Drawing.Point(403, 12);
+            this.groupBox2.Location = new System.Drawing.Point(403, 34);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(200, 123);
             this.groupBox2.TabIndex = 5;
@@ -163,6 +107,7 @@
             // radioButton1
             // 
             this.radioButton1.AutoSize = true;
+            this.radioButton1.Checked = true;
             this.radioButton1.Location = new System.Drawing.Point(6, 19);
             this.radioButton1.Name = "radioButton1";
             this.radioButton1.Size = new System.Drawing.Size(107, 17);
@@ -178,7 +123,6 @@
             this.radioButton2.Name = "radioButton2";
             this.radioButton2.Size = new System.Drawing.Size(95, 17);
             this.radioButton2.TabIndex = 1;
-            this.radioButton2.TabStop = true;
             this.radioButton2.Text = "16-bit 565RGB";
             this.radioButton2.UseVisualStyleBackColor = true;
             // 
@@ -189,7 +133,6 @@
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(108, 17);
             this.radioButton3.TabIndex = 2;
-            this.radioButton3.TabStop = true;
             this.radioButton3.Text = "16-bit 1555ARGB";
             this.radioButton3.UseVisualStyleBackColor = true;
             // 
@@ -200,19 +143,8 @@
             this.radioButton4.Name = "radioButton4";
             this.radioButton4.Size = new System.Drawing.Size(159, 17);
             this.radioButton4.TabIndex = 3;
-            this.radioButton4.TabStop = true;
             this.radioButton4.Text = "16-bit 4444ARGB (Indy only)";
             this.radioButton4.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(441, 141);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 6;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // groupBox3
             // 
@@ -285,28 +217,44 @@
             this.pictureBox3.TabIndex = 5;
             this.pictureBox3.TabStop = false;
             // 
+            // openButton
+            // 
+            this.openButton.Location = new System.Drawing.Point(12, 12);
+            this.openButton.Name = "openButton";
+            this.openButton.Size = new System.Drawing.Size(75, 23);
+            this.openButton.TabIndex = 8;
+            this.openButton.Text = "Open...";
+            this.openButton.UseVisualStyleBackColor = true;
+            this.openButton.Click += new System.EventHandler(this.openButton_Click);
+            // 
+            // saveButton
+            // 
+            this.saveButton.Location = new System.Drawing.Point(12, 41);
+            this.saveButton.Name = "saveButton";
+            this.saveButton.Size = new System.Drawing.Size(75, 23);
+            this.saveButton.TabIndex = 9;
+            this.saveButton.Text = "Save...";
+            this.saveButton.UseVisualStyleBackColor = true;
+            // 
             // Matt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.saveButton);
+            this.Controls.Add(this.openButton);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.button1);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.pictureBox1);
-            this.Controls.Add(this.matToolsGroup);
             this.Name = "Matt";
             this.Text = "Matt - BAH 2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
             this.Load += new System.EventHandler(this.Matt_Load);
-            this.matToolsGroup.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.groupBox3.ResumeLayout(false);
@@ -318,22 +266,15 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.GroupBox matToolsGroup;
-        private System.Windows.Forms.Button saveMat;
-        private System.Windows.Forms.Button openMat;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBox2;
-        private System.Windows.Forms.GroupBox groupBox1;
-        private System.Windows.Forms.Button openImage;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton radioButton4;
         private System.Windows.Forms.RadioButton radioButton3;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton radioButton1;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.ComboBox gobColormap;
         private System.Windows.Forms.Button button2;
@@ -341,6 +282,8 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.PictureBox pictureBox3;
+        private System.Windows.Forms.Button openButton;
+        private System.Windows.Forms.Button saveButton;
     }
 }
 
