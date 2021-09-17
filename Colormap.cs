@@ -15,6 +15,14 @@ namespace Smith
             public byte G;
             public byte B;
             public bool SelfIlluminated;
+
+            public System.Drawing.Color Color
+            {
+                get
+                {
+                    return System.Drawing.Color.FromArgb(R, G, B);
+                }
+            }
         }
 
         public float TintR;

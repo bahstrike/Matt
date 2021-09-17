@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,6 +114,8 @@ namespace Matt
                 gobColormap.Enabled = false;
 
             }
+
+            UpdateCMP();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -151,6 +154,49 @@ namespace Matt
                 ini.WriteKey("General", "CMPorGOB", cmpOrGobPath.Text);
                 ini.WriteKey("General", "GOBCMPIndex", gobColormap.SelectedIndex.ToString());
             }
+        }
+
+        private void gobColormap_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateCMP();
+        }
+
+        void UpdateCMP()
+        {
+            Smith.Colormap cmp = GetCurrentColormap();
+            if(cmp == null)
+            {
+                pictureBox3.Image = null;
+                return;
+            }
+
+            int width = pictureBox3.ClientRectangle.Width;
+            int height = pictureBox3.ClientRectangle.Height;
+
+            Bitmap bmp = new Bitmap(width, height);
+            using (Graphics gfx = Graphics.FromImage(bmp))
+            {
+                gfx.FillRectangle(new HatchBrush(HatchStyle.LightDownwardDiagonal, Color.FromArgb(0, 0, 0), Color.FromArgb(60, 60, 60)), 0, 0, width, height);
+
+                for(int i=0; i<256; i++)
+                {
+                    Color clr = cmp.Palette[i].Color;
+
+                    const int clrsPerRow = 25;
+                    float clrSize = (float)width / (float)clrsPerRow;
+                    int iX = i % clrsPerRow;
+                    int iY = i / clrsPerRow;
+
+                    float fX = (float)iX * clrSize;
+                    float fY = (float)iY * clrSize;
+
+                    RectangleF clrRc = new RectangleF(fX, fY, clrSize, clrSize);
+                    gfx.FillRectangle(new SolidBrush(clr), clrRc);
+                }
+
+            }
+
+            pictureBox3.Image = bmp;
         }
     }
 }
