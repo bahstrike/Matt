@@ -305,15 +305,27 @@ namespace Matt
             Close();
         }
 
+
+        int? openLastFilterIndex = null;
         private void openButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
             ofd.Filter = "All Images|*.mat;*.bmp;*.png;*.jpg;*.jpeg;*.gif|Material Files (*.mat)|*.mat|Image Files (*.bmp;*.png;*.jpg;*.jpeg;*.gif)|*.bmp;*.png;*.jpg;*.jpeg;*.gif";
+            ofd.FilterIndex = openLastFilterIndex ?? 0;
+            try
+            {
+                ofd.FileName = OpenedImageFilePath;
+            }
+            catch
+            {
+
+            }
 
             if (ofd.ShowDialog() != DialogResult.OK)
                 return;
 
+            openLastFilterIndex = ofd.FilterIndex;
             OpenedImageFilePath = ofd.FileName;
 
             ReloadOriginal(true);
@@ -321,6 +333,9 @@ namespace Matt
 
         private void format_CheckedChanged(object sender, EventArgs e)
         {
+            // if 16bit disable the colormap group
+            
+
             Reprocess();
         }
 
