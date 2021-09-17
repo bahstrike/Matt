@@ -399,7 +399,30 @@ namespace Matt
                 return;
 
             openLastFilterIndex = ofd.FilterIndex;
-            OpenedImageFilePath = ofd.FileName;
+
+            OpenOriginal(ofd.FileName);
+        }
+
+        void OpenOriginal(string filename)
+        {
+            if (string.IsNullOrEmpty(filename))
+                return;
+
+            if (!File.Exists(filename))
+                return;
+
+            bool match = false;
+            foreach(string ext in new string[] { ".mat", ".bmp", ".png", ".jpg", ".jpeg", ".gif" })
+                if(filename.EndsWith(ext, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    match = true;
+                    break;
+                }
+
+            if (!match)
+                return;
+
+            OpenedImageFilePath = filename;
 
             ReloadOriginal(true);
         }
@@ -432,6 +455,26 @@ namespace Matt
                 forceOriginalColormap = null;
                 ReloadOriginal(false);
             }
+        }
+
+        private void Matt_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            e.Effect = DragDropEffects.Link;
+        }
+
+        private void Matt_DragDrop(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+                return;
+
+            string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+            if (files.Length < 1)
+                return;
+
+            OpenOriginal(files[0]);
         }
     }
 }

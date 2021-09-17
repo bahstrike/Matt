@@ -293,6 +293,7 @@
             // 
             // Matt
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
@@ -311,6 +312,8 @@
             this.Text = "Matt - BAH 2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
             this.Load += new System.EventHandler(this.Matt_Load);
+            this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Matt_DragDrop);
+            this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Matt_DragEnter);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.groupBox2.ResumeLayout(false);
