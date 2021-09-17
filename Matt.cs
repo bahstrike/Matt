@@ -15,6 +15,69 @@ namespace Matt
 {
     public partial class Matt : Form
     {
+        public enum Format
+        {
+            Solid,
+            Paletted,
+            RGB565,
+            ARGB1555,
+            ARGB4444,
+        }
+
+        public Format CurrentFormat
+        {
+            get
+            {
+                if (bitdepthSolid.Checked)
+                    return Format.Solid;
+
+                if (bitdepth8.Checked)
+                    return Format.Paletted;
+
+                if (bitdepth565.Checked)
+                    return Format.RGB565;
+
+                if (bitdepth1555.Checked)
+                    return Format.ARGB1555;
+
+#if SUPPORTINDY
+                if (bitdepth4444.Checked)
+                    return Format.ARGB4444;
+#endif
+
+                // donno
+                return Format.RGB565;
+            }
+
+            set
+            {
+                switch(value)
+                {
+                    case Format.Solid:
+                        bitdepthSolid.Checked = true;
+                        break;
+
+                    case Format.Paletted:
+                        bitdepth8.Checked = true;
+                        break;
+
+                    case Format.RGB565:
+                        bitdepth565.Checked = true;
+                        break;
+
+                    case Format.ARGB1555:
+                        bitdepth1555.Checked = true;
+                        break;
+
+#if SUPPORTINDY
+                    case Format.ARGB4444:
+                        bitdepth4444.Checked = true;
+                        break;
+#endif
+                }
+            }
+        }
+
         private string INIFile
         {
             get
@@ -26,6 +89,10 @@ namespace Matt
         public Matt()
         {
             InitializeComponent();
+
+#if !SUPPORTINDY
+            bitdepth4444.Visible = false;
+#endif
         }
 
         Smith.Colormap GetCurrentColormap()
@@ -112,7 +179,11 @@ namespace Matt
                     if (cmpIndex >= 0 && cmpIndex < gobColormap.Items.Count)
                         gobColormap.SelectedIndex = cmpIndex;
                 }
-            }   
+            }
+
+
+            // trigger some dumb UI stuff
+            format_CheckedChanged(null, new EventArgs());
         }
 
         private void Matt_FormClosing(object sender, FormClosingEventArgs e)
@@ -186,8 +257,10 @@ namespace Matt
             return new Smith.Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
         }
 
-        public Bitmap GenerateBitmap(Smith.Colormap cmpOverride=null)
+        public Bitmap GenerateBitmap(out bool failedToNoColormap, Smith.Colormap cmpOverride=null)
         {
+            failedToNoColormap = false;
+
             try
             {
                 if (!OpenedMAT)
@@ -197,7 +270,7 @@ namespace Matt
                 Smith.Colormap cmp = cmpOverride ?? GetCurrentColormap();
 
                 Bitmap bmp;
-                mat.GenerateBitmap(out bmp, cmp);
+                mat.GenerateBitmap(out bmp, cmp, out failedToNoColormap);
 
                 return bmp;
             }
@@ -211,13 +284,10 @@ namespace Matt
         {
             try
             {
-                if (!OpenedMAT)
+                if (autoChangeOptions)
                 {
-                    
-
-                    if(autoChangeOptions)
+                    if(!OpenedMAT)
                     {
-
                         if (OpenedImageFilePath.EndsWith(".bmp", StringComparison.InvariantCultureIgnoreCase))
                         {
                             // dunno if .NET Image.FromFile()  has been fixed to support 32bit ARGB yet, so we'll
@@ -225,57 +295,58 @@ namespace Matt
                             // now we'll just "assume" it works
 
                             Bitmap bmp = (Bitmap)Image.FromFile(OpenedImageFilePath);// yea we're temp-loading the whole image just for properties..  who cares; computers are fast now
-                            switch(bmp.PixelFormat)
+                            switch (bmp.PixelFormat)
                             {
                                 case PixelFormat.Format8bppIndexed:
-                                    bitdepth8.Checked = true;
+                                    CurrentFormat = Format.Paletted;
                                     break;
 
                                 case PixelFormat.Format24bppRgb:
-                                    bitdepth565.Checked = true;
+                                    CurrentFormat = Format.RGB565;
                                     break;
 
                                 case PixelFormat.Format32bppArgb:
-                                    bitdepth1555.Checked = true;
+                                    CurrentFormat = Format.ARGB1555;
                                     break;
                             }
 
                         }
                         else if (OpenedImageFilePath.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
                             // i dunno maybe select 1555 for PNGs cause they might default to having transparency
-                            bitdepth1555.Checked = true;
+                            CurrentFormat = Format.ARGB1555;
                         else if (OpenedImageFilePath.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase))
                             // GIF is by nature only 256 color  so if someones using that, they prolly want to make an 8bit tex
-                            bitdepth8.Checked = true;
+                            CurrentFormat = Format.Paletted;
                         else
                             // everything else (jpgs basically) should default to 565..  cause most ppl prolly just want to do 16bit color mats
-                            bitdepth565.Checked = true;
-                    }
-                }
-                else
-                {
-                    Smith.Material mat = LoadOriginalAsMaterial();
-
-                    if(autoChangeOptions)
+                            CurrentFormat = Format.RGB565;
+                    } else
                     {
-                        if (mat.IsSingleColor(0))
-                            bitdepthSolid.Checked = true;
-                        else if (mat.ColorBits == 8)
-                            bitdepth8.Checked = true;
-                        else
+                        Smith.Material mat = LoadOriginalAsMaterial();
+
+                        if (autoChangeOptions)
                         {
-                            if (mat.GreenBits == 6)
-                                bitdepth565.Checked = true;
-                            else if (mat.GreenBits == 5)
-                                bitdepth1555.Checked = true;
-                            else if (mat.GreenBits == 4)
-                                bitdepth4444.Checked = true;
+                            if (mat.IsSingleColor(0))
+                                CurrentFormat = Format.Solid;
+                            else if (mat.ColorBits == 8)
+                                CurrentFormat = Format.Paletted;
+                            else
+                            {
+                                if (mat.GreenBits == 6)
+                                    CurrentFormat = Format.RGB565;
+                                else if (mat.GreenBits == 5)
+                                    CurrentFormat = Format.ARGB1555;
+                                else if (mat.GreenBits == 4)
+                                    CurrentFormat = Format.ARGB4444;
+                            }
                         }
                     }
                 }
 
 
-                pictureBox1.Image = GenerateBitmap(forceOriginalColormap);
+                bool needColormap;
+                pictureBox1.Image = GenerateBitmap(out needColormap, forceOriginalColormap);
+                originalNeedColormap.Visible = needColormap;
 
 
                 Reprocess(true);
@@ -297,7 +368,9 @@ namespace Matt
                 return;
             }
 
-            pictureBox2.Image = GenerateBitmap(null/*no override*/);
+            bool needColormap;
+            pictureBox2.Image = GenerateBitmap(out needColormap, null/*no override*/);
+            previewNeedColormap.Visible = needColormap;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -334,7 +407,7 @@ namespace Matt
         private void format_CheckedChanged(object sender, EventArgs e)
         {
             // if 16bit disable the colormap group
-            
+            colormapGroup.Enabled = (CurrentFormat == Format.Solid) || (CurrentFormat == Format.Paletted);
 
             Reprocess();
         }

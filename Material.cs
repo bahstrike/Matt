@@ -71,8 +71,10 @@ namespace Smith
             return true;
         }
 
-        public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, int index = 0)
+        public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, out bool failedToNoColormap, int index = 0)
         {
+            failedToNoColormap = false;
+
             bmp = null;
 
             //if (cmp == null)
@@ -90,7 +92,10 @@ namespace Smith
                     return;
 
                 if (cmp == null)
+                {
+                    failedToNoColormap = true;
                     return;
+                }
 
                 Colormap.RGB rgb = cmp.Palette[mh.colorIndex];
 
@@ -114,7 +119,10 @@ namespace Smith
             if (ColorBits == 8)
             {
                 if (cmp == null)
+                {
+                    failedToNoColormap = true;
                     return;
+                }
 
                 if (mipmap.Length < (th.Width * th.Height))
                     return;

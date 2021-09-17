@@ -34,11 +34,10 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
-            this.bitdepth4444 = new System.Windows.Forms.RadioButton();
             this.bitdepth1555 = new System.Windows.Forms.RadioButton();
             this.bitdepth565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.colormapGroup = new System.Windows.Forms.GroupBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
@@ -48,10 +47,13 @@
             this.openButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.originalKeepColormap = new System.Windows.Forms.Button();
+            this.bitdepth4444 = new System.Windows.Forms.RadioButton();
+            this.originalNeedColormap = new System.Windows.Forms.Label();
+            this.previewNeedColormap = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
-            this.groupBox3.SuspendLayout();
+            this.colormapGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             this.SuspendLayout();
             // 
@@ -118,17 +120,6 @@
             this.bitdepthSolid.UseVisualStyleBackColor = true;
             this.bitdepthSolid.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
-            // bitdepth4444
-            // 
-            this.bitdepth4444.AutoSize = true;
-            this.bitdepth4444.Location = new System.Drawing.Point(6, 111);
-            this.bitdepth4444.Name = "bitdepth4444";
-            this.bitdepth4444.Size = new System.Drawing.Size(159, 17);
-            this.bitdepth4444.TabIndex = 3;
-            this.bitdepth4444.Text = "16-bit 4444ARGB (Indy only)";
-            this.bitdepth4444.UseVisualStyleBackColor = true;
-            this.bitdepth4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
-            // 
             // bitdepth1555
             // 
             this.bitdepth1555.AutoSize = true;
@@ -164,20 +155,21 @@
             this.bitdepth8.UseVisualStyleBackColor = true;
             this.bitdepth8.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
-            // groupBox3
+            // colormapGroup
             // 
-            this.groupBox3.Controls.Add(this.pictureBox3);
-            this.groupBox3.Controls.Add(this.label4);
-            this.groupBox3.Controls.Add(this.button2);
-            this.groupBox3.Controls.Add(this.cmpOrGobPath);
-            this.groupBox3.Controls.Add(this.label3);
-            this.groupBox3.Controls.Add(this.gobColormap);
-            this.groupBox3.Location = new System.Drawing.Point(551, 182);
-            this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(237, 256);
-            this.groupBox3.TabIndex = 7;
-            this.groupBox3.TabStop = false;
-            this.groupBox3.Text = "Colormap";
+            this.colormapGroup.BackColor = System.Drawing.SystemColors.Control;
+            this.colormapGroup.Controls.Add(this.pictureBox3);
+            this.colormapGroup.Controls.Add(this.label4);
+            this.colormapGroup.Controls.Add(this.button2);
+            this.colormapGroup.Controls.Add(this.cmpOrGobPath);
+            this.colormapGroup.Controls.Add(this.label3);
+            this.colormapGroup.Controls.Add(this.gobColormap);
+            this.colormapGroup.Location = new System.Drawing.Point(551, 182);
+            this.colormapGroup.Name = "colormapGroup";
+            this.colormapGroup.Size = new System.Drawing.Size(237, 256);
+            this.colormapGroup.TabIndex = 7;
+            this.colormapGroup.TabStop = false;
+            this.colormapGroup.Text = "Colormap";
             // 
             // pictureBox3
             // 
@@ -264,15 +256,52 @@
             this.originalKeepColormap.UseVisualStyleBackColor = true;
             this.originalKeepColormap.Click += new System.EventHandler(this.originalKeepColormap_Click);
             // 
+            // bitdepth4444
+            // 
+            this.bitdepth4444.AutoSize = true;
+            this.bitdepth4444.Location = new System.Drawing.Point(6, 111);
+            this.bitdepth4444.Name = "bitdepth4444";
+            this.bitdepth4444.Size = new System.Drawing.Size(159, 17);
+            this.bitdepth4444.TabIndex = 3;
+            this.bitdepth4444.Text = "16-bit 4444ARGB (Indy only)";
+            this.bitdepth4444.UseVisualStyleBackColor = true;
+            this.bitdepth4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            // 
+            // originalNeedColormap
+            // 
+            this.originalNeedColormap.AutoSize = true;
+            this.originalNeedColormap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.originalNeedColormap.ForeColor = System.Drawing.Color.DarkOrange;
+            this.originalNeedColormap.Location = new System.Drawing.Point(155, 166);
+            this.originalNeedColormap.Name = "originalNeedColormap";
+            this.originalNeedColormap.Size = new System.Drawing.Size(113, 13);
+            this.originalNeedColormap.TabIndex = 11;
+            this.originalNeedColormap.Text = "NEED COLORMAP";
+            this.originalNeedColormap.Visible = false;
+            // 
+            // previewNeedColormap
+            // 
+            this.previewNeedColormap.AutoSize = true;
+            this.previewNeedColormap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.previewNeedColormap.ForeColor = System.Drawing.Color.DarkOrange;
+            this.previewNeedColormap.Location = new System.Drawing.Point(432, 166);
+            this.previewNeedColormap.Name = "previewNeedColormap";
+            this.previewNeedColormap.Size = new System.Drawing.Size(113, 13);
+            this.previewNeedColormap.TabIndex = 12;
+            this.previewNeedColormap.Text = "NEED COLORMAP";
+            this.previewNeedColormap.Visible = false;
+            // 
             // Matt
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.previewNeedColormap);
+            this.Controls.Add(this.originalNeedColormap);
             this.Controls.Add(this.originalKeepColormap);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.openButton);
-            this.Controls.Add(this.groupBox3);
+            this.Controls.Add(this.colormapGroup);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.pictureBox2);
@@ -286,8 +315,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
-            this.groupBox3.ResumeLayout(false);
-            this.groupBox3.PerformLayout();
+            this.colormapGroup.ResumeLayout(false);
+            this.colormapGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -300,11 +329,10 @@
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.PictureBox pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton bitdepth4444;
         private System.Windows.Forms.RadioButton bitdepth1555;
         private System.Windows.Forms.RadioButton bitdepth565;
         private System.Windows.Forms.RadioButton bitdepth8;
-        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox colormapGroup;
         private System.Windows.Forms.ComboBox gobColormap;
         private System.Windows.Forms.Button button2;
         private System.Windows.Forms.TextBox cmpOrGobPath;
@@ -315,6 +343,9 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.RadioButton bitdepthSolid;
         private System.Windows.Forms.Button originalKeepColormap;
+        private System.Windows.Forms.RadioButton bitdepth4444;
+        private System.Windows.Forms.Label originalNeedColormap;
+        private System.Windows.Forms.Label previewNeedColormap;
     }
 }
 
