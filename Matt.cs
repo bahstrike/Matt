@@ -60,6 +60,9 @@ namespace Matt
             if (!File.Exists(cmpOrGobPath.Text))
                 return null;
 
+            if (!Path.GetExtension(cmpOrGobPath.Text).Equals(".cmp", StringComparison.InvariantCultureIgnoreCase))
+                return null;
+
             cmp = new Smith.Colormap(Path.GetFileName(cmpOrGobPath.Text), File.OpenRead(cmpOrGobPath.Text));
 
             return cmp;
@@ -93,10 +96,7 @@ namespace Matt
         {
             string cmpFile = (sender as TextBox).Text;
 
-            if (!File.Exists(cmpFile))
-                return;
-
-            if(Path.GetExtension(cmpFile).Equals(".gob", StringComparison.InvariantCultureIgnoreCase))
+            if(File.Exists(cmpFile) && Path.GetExtension(cmpFile).Equals(".gob", StringComparison.InvariantCultureIgnoreCase))
             {
                 using (Smith.GOB gob = new Smith.GOB(Path.GetFileName(cmpFile), File.OpenRead(cmpFile)))
                     foreach (string s in gob.GetFilesWithExtension("cmp"))
@@ -108,8 +108,13 @@ namespace Matt
 
                 gobColormap.Enabled = true;
 
+                if(gobColormap.Items.Count > 0)
+                    gobColormap.SelectedIndex = 0;
+
             } else
             {
+                // file may not exist,  or might be a valid *.cmp;  but we're gonna zilch out the GOB dropdown regardless
+
                 gobColormap.Items.Clear();
                 gobColormap.Enabled = false;
 
