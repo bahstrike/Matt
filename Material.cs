@@ -58,6 +58,19 @@ namespace Smith
             }
         }
 
+        public bool IsSingleColor(int index = 0)
+        {
+            if (index < 0 || index >= Materials.Count)
+                return false;// whatev
+
+            MaterialHeader mh = Materials[index];
+
+            if (mh.textureId != -1)
+                return false;
+
+            return true;
+        }
+
         public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, int index = 0)
         {
             bmp = null;

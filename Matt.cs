@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,18 +26,6 @@ namespace Matt
         public Matt()
         {
             InitializeComponent();
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Bitmap bmp = pictureBox1.Image as Bitmap;
-            if(bmp == null)
-            {
-                pictureBox2.Image = null;
-                return;
-            }
-
-            pictureBox2.Image = bmp;
         }
 
         Smith.Colormap GetCurrentColormap()
@@ -85,6 +74,7 @@ namespace Matt
             }
 
             UpdateCMP();
+            Reprocess();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -138,6 +128,7 @@ namespace Matt
         private void gobColormap_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateCMP();
+            Reprocess();
         }
 
         void UpdateCMP()
@@ -187,36 +178,126 @@ namespace Matt
             }
         }
 
-        public void ReloadOriginal()
+        public Smith.Material LoadOriginalAsMaterial()
+        {
+            if (!OpenedMAT)
+                return null;
+
+            return new Smith.Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
+        }
+
+        public Bitmap GenerateBitmap(Smith.Colormap cmpOverride=null)
+        {
+            try
+            {
+                if (!OpenedMAT)
+                    return (Bitmap)Bitmap.FromFile(OpenedImageFilePath);
+
+                Smith.Material mat = LoadOriginalAsMaterial();
+                Smith.Colormap cmp = cmpOverride ?? GetCurrentColormap();
+
+                Bitmap bmp;
+                mat.GenerateBitmap(out bmp, cmp);
+
+                return bmp;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        public void ReloadOriginal(bool autoChangeOptions=false)
         {
             try
             {
                 if (!OpenedMAT)
                 {
-                    pictureBox1.Image = Bitmap.FromFile(OpenedImageFilePath);
+                    
+
+                    if(autoChangeOptions)
+                    {
+
+                        if (OpenedImageFilePath.EndsWith(".bmp", StringComparison.InvariantCultureIgnoreCase))
+                        {
+                            // dunno if .NET Image.FromFile()  has been fixed to support 32bit ARGB yet, so we'll
+                            // have to check and maybe add a custom loader to support bitmaps with alpha..  but for
+                            // now we'll just "assume" it works
+
+                            Bitmap bmp = (Bitmap)Image.FromFile(OpenedImageFilePath);// yea we're temp-loading the whole image just for properties..  who cares; computers are fast now
+                            switch(bmp.PixelFormat)
+                            {
+                                case PixelFormat.Format8bppIndexed:
+                                    bitdepth8.Checked = true;
+                                    break;
+
+                                case PixelFormat.Format24bppRgb:
+                                    bitdepth565.Checked = true;
+                                    break;
+
+                                case PixelFormat.Format32bppArgb:
+                                    bitdepth1555.Checked = true;
+                                    break;
+                            }
+
+                        }
+                        else if (OpenedImageFilePath.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
+                            // i dunno maybe select 1555 for PNGs cause they might default to having transparency
+                            bitdepth1555.Checked = true;
+                        else if (OpenedImageFilePath.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase))
+                            // GIF is by nature only 256 color  so if someones using that, they prolly want to make an 8bit tex
+                            bitdepth8.Checked = true;
+                        else
+                            // everything else (jpgs basically) should default to 565..  cause most ppl prolly just want to do 16bit color mats
+                            bitdepth565.Checked = true;
+                    }
                 }
                 else
                 {
-                    Smith.Material mat = new Smith.Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
-                    Smith.Colormap cmp = GetCurrentColormap();
+                    Smith.Material mat = LoadOriginalAsMaterial();
 
-                    if (mat.ColorBits == 8 && cmp == null)
+                    if(autoChangeOptions)
                     {
-                        MessageBox.Show($"{Path.GetFileName(OpenedImageFilePath)} is 8-bit but no colormap has been selected");
-                        return;
+                        if (mat.IsSingleColor(0))
+                            bitdepthSolid.Checked = true;
+                        else if (mat.ColorBits == 8)
+                            bitdepth8.Checked = true;
+                        else
+                        {
+                            if (mat.GreenBits == 6)
+                                bitdepth565.Checked = true;
+                            else if (mat.GreenBits == 5)
+                                bitdepth1555.Checked = true;
+                            else if (mat.GreenBits == 4)
+                                bitdepth4444.Checked = true;
+                        }
                     }
-
-                    Bitmap bmp;
-                    mat.GenerateBitmap(out bmp, cmp);
-
-                    pictureBox1.Image = bmp;
                 }
+
+
+                pictureBox1.Image = GenerateBitmap(forceOriginalColormap);
+
+
+                Reprocess(true);
             }
             catch
             {
                 pictureBox1.Image = null;
                 pictureBox2.Image = null;
             }
+        }
+
+        public void Reprocess(bool fromReloadOriginal=false)
+        {
+            // if not from reloadoriginal,  maybe we just want to run that instead.
+            // could be optimized if only changing output settings.. but who cares PCs are fast now
+            if(!fromReloadOriginal)
+            {
+                ReloadOriginal();
+                return;
+            }
+
+            pictureBox2.Image = GenerateBitmap(null/*no override*/);
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -235,7 +316,32 @@ namespace Matt
 
             OpenedImageFilePath = ofd.FileName;
 
-            ReloadOriginal();
+            ReloadOriginal(true);
+        }
+
+        private void format_CheckedChanged(object sender, EventArgs e)
+        {
+            Reprocess();
+        }
+
+        Smith.Colormap forceOriginalColormap = null;
+        private void originalKeepColormap_Click(object sender, EventArgs e)
+        {
+            if(forceOriginalColormap == null)
+            {
+                forceOriginalColormap = GetCurrentColormap();
+                if (forceOriginalColormap == null)
+                    return;
+
+                originalKeepColormap.Text = "Clear Saved Colormap";
+            } else
+            {
+                originalKeepColormap.Text = "Keep Current Colormap";
+
+                // if clearing saved colormap then reprocess immediately using whatever is selected
+                forceOriginalColormap = null;
+                ReloadOriginal(false);
+            }
         }
     }
 }
