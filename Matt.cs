@@ -370,22 +370,20 @@ namespace Matt
             }
 
 
-            // generate a new Material from current "original" bitmap.. this has already been created in picturebox
-            Bitmap sourceBitmap = pictureBox1.Image as Bitmap;
-            if (sourceBitmap == null)
-                return;
-
-
-            Material mat = GenerateOutputMat(sourceBitmap);
-
+            Material mat = GenerateOutputMat();
 
             bool needColormap;
             pictureBox2.Image = GenerateBitmap(out needColormap, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
         }
 
-        unsafe Material GenerateOutputMat(Bitmap bmp)
+        unsafe Material GenerateOutputMat()
         {
+            // uhm cheap hack-  we already loaded the full bitmap into a picturebox.. so steal it from there
+            Bitmap bmp = pictureBox1.Image as Bitmap;
+            if (bmp == null)
+                return null;
+
             Format fmt = CurrentFormat;
             Colormap cmp = GetCurrentColormap();
 
@@ -507,12 +505,17 @@ namespace Matt
         }
 
 
+        const string filterAllImages = "All Images|*.mat;*.bmp;*.png;*.jpg;*.jpeg;*.gif";
+        const string filterMatFiles = "Material Files (*.mat)|*.mat";
+        const string filterImageFiles = "Image Files (*.bmp;*.png;*.jpg;*.jpeg;*.gif)|*.bmp;*.png;*.jpg;*.jpeg;*.gif";
+
+
         int? openLastFilterIndex = null;
         private void openButton_Click(object sender, EventArgs e)
         {
             OpenFileDialog ofd = new OpenFileDialog();
 
-            ofd.Filter = "All Images|*.mat;*.bmp;*.png;*.jpg;*.jpeg;*.gif|Material Files (*.mat)|*.mat|Image Files (*.bmp;*.png;*.jpg;*.jpeg;*.gif)|*.bmp;*.png;*.jpg;*.jpeg;*.gif";
+            ofd.Filter = $"{filterAllImages}|{filterMatFiles}|{filterImageFiles}";
             ofd.FilterIndex = openLastFilterIndex ?? 0;
             try
             {
@@ -622,6 +625,71 @@ namespace Matt
 
             // no image.. fill in some "nothing here" background
             FillRectEmpty(e.Graphics, pb.ClientRectangle);
+        }
+
+        int? saveLastFilterIndex = null;
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog sfd = new SaveFileDialog();
+
+            sfd.Filter = $"{filterMatFiles}|{filterImageFiles}";
+            sfd.FilterIndex = saveLastFilterIndex ?? 0;
+            sfd.InitialDirectory = Path.GetDirectoryName(OpenedImageFilePath);
+
+            /*try
+            {
+                sfd.FileName = OpenedImageFilePath;
+            }
+            catch
+            {
+
+            }*/
+
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            saveLastFilterIndex = sfd.FilterIndex;
+
+
+            if (sfd.FileName.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase))
+            {
+                Material mat = GenerateOutputMat();
+                mat.Save(sfd.FileName);
+            } else
+            {
+                // whatever random image file from bitmap..   just save "original" bitmap
+                Bitmap bmp = pictureBox1.Image as Bitmap;
+                if (bmp == null)
+                    return;
+
+                bmp.Save(sfd.FileName, ImageFormatFromExtension(Path.GetExtension(sfd.FileName)));
+            }
+        }
+
+        ImageFormat ImageFormatFromExtension(string ext)
+        {
+            if (ext[0] != '.')
+                ext = '.' + ext;
+
+            switch(ext.ToLowerInvariant())
+            {
+                case ".jpg":
+                case ".jpeg":
+                    return ImageFormat.Jpeg;
+
+                case ".png":
+                    return ImageFormat.Png;
+
+                case ".gif":
+                    return ImageFormat.Gif;
+
+                case ".bmp":
+                    return ImageFormat.Bmp;
+
+                default:
+                    MessageBox.Show($"No idea what extension {ext} is supposed to be");
+                    return ImageFormat.Bmp;
+            }
         }
     }
 }

@@ -297,6 +297,70 @@ namespace Smith
 
         }
 
+        public void Save(string filepath)
+        {
+            Save(File.Create(filepath));
+        }
+
+        public void Save(Stream s)
+        {
+            BinaryWriter bw = new BinaryWriter(s);
+
+            bw.Write((byte)'M');
+            bw.Write((byte)'A');
+            bw.Write((byte)'T');
+            bw.Write((byte)' ');
+            bw.Write(0x32); // ver
+            bw.Write(2);    // type
+            bw.Write(Materials.Count);    // nummaterials
+            bw.Write(Textures.Count);    // numtextures
+            bw.Write(TransparentColor);    // transparency value
+            bw.Write(ColorBits);    // colorbits
+            bw.Write(BlueBits);    // bluebits
+            bw.Write(GreenBits);    // greenbits
+            bw.Write(RedBits);    // redbits
+
+            bw.Write(0x0B);// unknown
+            bw.Write(0x05);//unknown
+            bw.Write(0);//unknown
+            bw.Write(0x03);//unknown
+            bw.Write(0x02);//unknown
+            bw.Write(0x03);//unknown
+            for (int x = 0; x < 3 * 4; x++)
+                bw.Write((byte)0);
+
+            int texIndex = 0;
+            foreach(MaterialHeader mh in Materials)
+            {
+                bw.Write(8);    // texture
+                bw.Write(0);    // unknown
+                for (int x = 0; x < 4; x++)
+                    bw.Write((int)0x3F800000);
+                bw.Write(0);    // dunno
+                bw.Write(0);    // dunno
+                bw.Write((uint)0xBFF78482);  // dunno
+                bw.Write(texIndex);    // texture index
+
+                texIndex++;
+            }
+
+            foreach(TextureHeader th in Textures)
+            {
+                bw.Write(th.Width);
+                bw.Write(th.Height);
+                bw.Write(th.Transparent);    // transparent
+                bw.Write(0);    // pad
+                bw.Write(0);    // pad
+                bw.Write(th.MipmapData.Count);    // mipmaps
+
+                // dump mips
+                foreach (byte[] mip in th.MipmapData)
+                    bw.Write(mip);
+
+            }
+        }
+        
+
         public Material(string n, Stream s)
         {
             Name = n;
