@@ -25,6 +25,8 @@ namespace Matt
             ARGB4444,
         }
 
+        public int CurrentColorIndex = 0;
+
         public Format CurrentFormat
         {
             get
@@ -234,6 +236,9 @@ namespace Matt
 
                     RectangleF clrRc = new RectangleF(fX, fY, clrSize, clrSize);
                     gfx.FillRectangle(new SolidBrush(clr), clrRc);
+
+                    if (i == CurrentColorIndex)
+                        gfx.DrawRectangle(new Pen(Color.FromArgb(255 - clr.R, 255 - clr.G, 255 - clr.B), 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
                 }
 
             }
@@ -255,7 +260,8 @@ namespace Matt
             if (!OpenedMAT)
                 return null;
 
-            return new Material(Path.GetFileName(OpenedImageFilePath), File.OpenRead(OpenedImageFilePath));
+            using(Stream s = File.OpenRead(OpenedImageFilePath))
+                return new Material(Path.GetFileName(OpenedImageFilePath), s);
         }
 
         public Bitmap GenerateBitmap(out bool failedToNoColormap, Colormap cmpOverride=null, Material matOverride=null)
@@ -327,6 +333,9 @@ namespace Matt
 
                         if (autoChangeOptions)
                         {
+                            if (mat.Materials.Count > 0)
+                                CurrentColorIndex = mat.Materials[0].colorIndex;
+
                             if (mat.IsSingleColor(0))
                                 CurrentFormat = Format.Solid;
                             else if (mat.ColorBits == 8)
@@ -349,6 +358,9 @@ namespace Matt
                 pictureBox1.Image = GenerateBitmap(out needColormap, forceOriginalColormap);
                 originalNeedColormap.Visible = needColormap;
 
+
+                // we are baking the "colorindex" rectangle into the colormap bitmap for now..  so regenerate it
+                UpdateCMP();
 
                 Reprocess(true);
             }
@@ -386,6 +398,7 @@ namespace Matt
 
             Format fmt = CurrentFormat;
             Colormap cmp = GetCurrentColormap();
+            int clrIndex = CurrentColorIndex;
 
             // if 8bit we need a colormap
             if (cmp == null && (fmt == Format.Solid || fmt == Format.Paletted))
@@ -430,7 +443,7 @@ namespace Matt
             Material.MaterialHeader mh = new Material.MaterialHeader();
             mat.Materials.Add(mh);
 
-            mh.colorIndex = 0;
+            mh.colorIndex = clrIndex;
             mh.textureId = 0;
 
 
@@ -467,7 +480,10 @@ namespace Matt
                         {
                             case Format.Paletted:
                                 {
-                                    *(dst++) = (byte)cmp.FindClosestColor(src[2], src[1], src[0]);
+                                    if (src[3] < 255)   // if transparent (whats a good threshold?)  write a 0
+                                        *(dst++) = 0;
+                                    else
+                                        *(dst++) = (byte)cmp.FindClosestColor(src[2], src[1], src[0], /*mh.colorIndex*/ 0/*is zero always transparent? if so, never select it for a valid color*/);
                                 }
                                 break;
 

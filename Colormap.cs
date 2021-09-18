@@ -35,12 +35,23 @@ namespace Smith
             return Name;
         }
 
-        public int FindClosestColor(int r, int g, int b)
+        public int FindClosestColor(int r, int g, int b, int skipIndex=-1)
         {
-            int smallestDiffIndex = 0;
+#if false
+            // donno how we are supposed to know what palette entries are taboo:
+            // maybe its MaterialHeader.colorIndex  (provided as skipIndex)  but
+            // bah.mat  (originally from matmaster)  specifies 255 as colorindex
+            // yet never uses palette[0]..  uncertain if matmaster is correct, tho
+            int smallestDiffIndex = (skipIndex == 0) ? 2 : 1;
+#else
+            int smallestDiffIndex = (skipIndex == 0) ? 1 : 0;
+#endif
 
-            for(int i=1; i<256; i++)
+            for (int i=smallestDiffIndex+1; i<256; i++)
             {
+                if (i == skipIndex)
+                    continue;
+
                 int bestDiff = DetermineColorDiff(smallestDiffIndex, r, g, b);
                 int curDiff = DetermineColorDiff(i, r, g, b);
 

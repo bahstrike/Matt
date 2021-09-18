@@ -299,7 +299,8 @@ namespace Smith
 
         public void Save(string filepath)
         {
-            Save(File.Create(filepath));
+            using(Stream s = File.Create(filepath))
+                Save(s);
         }
 
         public void Save(Stream s)
@@ -320,12 +321,25 @@ namespace Smith
             bw.Write(GreenBits);    // greenbits
             bw.Write(RedBits);    // redbits
 
-            bw.Write(0x0B);// unknown
-            bw.Write(0x05);//unknown
-            bw.Write(0);//unknown
-            bw.Write(0x03);//unknown
-            bw.Write(0x02);//unknown
-            bw.Write(0x03);//unknown
+            // for paletted these are all 0?
+            if (ColorBits == 8)
+            {
+                bw.Write(0);// unknown
+                bw.Write(0);//unknown
+                bw.Write(0);//unknown
+                bw.Write(0);//unknown
+                bw.Write(0);//unknown
+                bw.Write(0);//unknown
+            }
+            else
+            {
+                bw.Write(0x0B);// unknown
+                bw.Write(0x05);//unknown
+                bw.Write(0);//unknown
+                bw.Write(0x03);//unknown
+                bw.Write(0x02);//unknown
+                bw.Write(0x03);//unknown
+            }
             for (int x = 0; x < 3 * 4; x++)
                 bw.Write((byte)0);
 
@@ -333,12 +347,26 @@ namespace Smith
             foreach(MaterialHeader mh in Materials)
             {
                 bw.Write(8);    // texture
-                bw.Write(0);    // unknown
+
+                // unknown "colornum"
+                /*if (ColorBits == 8)
+                    bw.Write(0xFF); // always 255 for 8bit?
+                else
+                    bw.Write(0);    // is this 0 for 16bit?*/
+                bw.Write(mh.colorIndex);
+
                 for (int x = 0; x < 4; x++)
                     bw.Write((int)0x3F800000);
+#if false
+                // matmaster seems to have these swapped;  use this for matmaster "compatibility"
+                bw.Write(0);    // dunno
+                bw.Write((uint)0xBFF78482);  // dunno
+                bw.Write(0);    // dunno
+#else
                 bw.Write(0);    // dunno
                 bw.Write(0);    // dunno
                 bw.Write((uint)0xBFF78482);  // dunno
+#endif
                 bw.Write(texIndex);    // texture index
 
                 texIndex++;
@@ -348,7 +376,7 @@ namespace Smith
             {
                 bw.Write(th.Width);
                 bw.Write(th.Height);
-                bw.Write(th.Transparent);    // transparent
+                bw.Write(th.Transparent?1:0/*should be color value?*/);    // transparent
                 bw.Write(0);    // pad
                 bw.Write(0);    // pad
                 bw.Write(th.MipmapData.Count);    // mipmaps

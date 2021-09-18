@@ -34,6 +34,7 @@
             this.pictureBox2 = new System.Windows.Forms.PictureBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
+            this.bitdepth4444 = new System.Windows.Forms.RadioButton();
             this.bitdepth1555 = new System.Windows.Forms.RadioButton();
             this.bitdepth565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
@@ -47,7 +48,6 @@
             this.openButton = new System.Windows.Forms.Button();
             this.saveButton = new System.Windows.Forms.Button();
             this.originalKeepColormap = new System.Windows.Forms.Button();
-            this.bitdepth4444 = new System.Windows.Forms.RadioButton();
             this.originalNeedColormap = new System.Windows.Forms.Label();
             this.previewNeedColormap = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -121,6 +121,17 @@
             this.bitdepthSolid.Text = "Solid color w/ colormap";
             this.bitdepthSolid.UseVisualStyleBackColor = true;
             this.bitdepthSolid.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            // 
+            // bitdepth4444
+            // 
+            this.bitdepth4444.AutoSize = true;
+            this.bitdepth4444.Location = new System.Drawing.Point(6, 111);
+            this.bitdepth4444.Name = "bitdepth4444";
+            this.bitdepth4444.Size = new System.Drawing.Size(159, 17);
+            this.bitdepth4444.TabIndex = 3;
+            this.bitdepth4444.Text = "16-bit 4444ARGB (Indy only)";
+            this.bitdepth4444.UseVisualStyleBackColor = true;
+            this.bitdepth4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
             // bitdepth1555
             // 
@@ -259,17 +270,6 @@
             this.originalKeepColormap.Text = "Keep Current Colormap";
             this.originalKeepColormap.UseVisualStyleBackColor = true;
             this.originalKeepColormap.Click += new System.EventHandler(this.originalKeepColormap_Click);
-            // 
-            // bitdepth4444
-            // 
-            this.bitdepth4444.AutoSize = true;
-            this.bitdepth4444.Location = new System.Drawing.Point(6, 111);
-            this.bitdepth4444.Name = "bitdepth4444";
-            this.bitdepth4444.Size = new System.Drawing.Size(159, 17);
-            this.bitdepth4444.TabIndex = 3;
-            this.bitdepth4444.Text = "16-bit 4444ARGB (Indy only)";
-            this.bitdepth4444.UseVisualStyleBackColor = true;
-            this.bitdepth4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
             // originalNeedColormap
             // 

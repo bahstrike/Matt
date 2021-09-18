@@ -1,0 +1,60 @@
+// MAT header
+// NOTE: the RGB shift and/or RGB bits values may be in an incorrect order. JKSpecs reports these fields as
+// unknown values. BoBo Fett's mat-16 specification has these values listed in conflicting order (they don't match up with the comments, even)
+struct tMAT_Header
+{
+	char verification[4];		// 'MAT '
+	long version;				// version of material.   should be 0x32
+	long type;					// type of material.  0 = color       1 = ?         2 = texture
+	long numMaterials;			// number of materials contained in material file
+	long numTextures;			// number of textures. in color materials, this is 0. in texture materials, this is equal to numMaterials
+	long unknown0;				// JKSpecs says this is 0.  BoBo Fett's mat-16 spec says this is 1
+	long colorBits;				// number of bits per pixel
+	long blueBits;				// number of blue bits per pixel (could this be red?)
+	long greenBits;				// number of green bits per pixel
+	long redBits;				// number of red bits per pixel (could this be blue?)
+	long blueShiftL;			// blue left shift
+	long greenShiftL;			// green left shift
+	long redShiftL;				// red left shift
+	long blueShiftR;			// blue right shift
+	long greenShiftR;			// green right shift
+	long redShiftR;				// red right shift
+	char unknown1[12];			// unknown/unused bytes
+};
+
+// Texture material header
+struct tMAT_TextureHeader
+{
+	long unknown0;				// unknown	( BoBo Fett reports this as being 0 )
+	long unknown1;				// unknown  ( BoBo Fett reports this as being 4 )
+	long unknown2;				// unknown  ( JKSpecs reports this as being 0xBFF78482, BoBo Fett reports this as being 4 )
+	long textureId;				// current texture ID, starting at 0 up to numTextures - 1
+};
+
+// Material entry header
+struct tMAT_MaterialHeader
+{
+	long type;					// type of material entry (0 = color    8 = texture)
+	long colorIndex;			// for color materials, this is the palette entry in CMP for the material color. for textures, this is RGB of transparency value
+	long unknown[4];			// unknown/unused bytes   ( JKSpecs reports these are all 0x3F800000 )
+	struct tMAT_TextureHeader *textureHeader;		// pointer to texture header (NULL for color materials)
+};
+
+// Texture material data
+struct tMAT_TextureData
+{
+	long width;					// width of texture
+	long height;				// height of texture
+	long transparent;			// bool to indictate using transparency
+	long unknown[2];			// unknown/unused bytes
+	long numMipmaps;			// number of mipmaps for texture
+	void **pData;				// actual bitmap data (array of pointers to bytes, numMipmaps large)
+};
+
+// MAT data format
+struct tMAT_Data
+{
+	struct tMAT_Header header;							// MAT file header
+	struct tMAT_MaterialHeader *materialHeaders;		// material headers			(array of size numMaterials)
+	struct tMAT_TextureData *textureData;				// texture datas			(array of size numTextures)
+};
