@@ -145,6 +145,10 @@ namespace Matt
 
             UpdateCMP();
             Reprocess();
+
+
+            // whatever repaint everything NOW if colormap data has changed
+            Update();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -203,6 +207,9 @@ namespace Matt
         {
             UpdateCMP();
             Reprocess();
+
+            // enforce redrawing everything now
+            Update();
         }
 
         void UpdateCMP()
