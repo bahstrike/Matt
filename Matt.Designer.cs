@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.pictureBox1 = new PictureBoxNN();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new System.Windows.Forms.PictureBox();
+            this.pictureBox2 = new PictureBoxNN();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
             this.bitdepth4444 = new System.Windows.Forms.RadioButton();
@@ -39,7 +39,7 @@
             this.bitdepth565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
             this.colormapGroup = new System.Windows.Forms.GroupBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
+            this.pictureBox3 = new PictureBoxNN();
             this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.cmpOrGobPath = new System.Windows.Forms.TextBox();
@@ -331,10 +331,10 @@
         }
 
         #endregion
-        private System.Windows.Forms.PictureBox pictureBox1;
+        private PictureBoxNN pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.PictureBox pictureBox2;
+        private PictureBoxNN pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton bitdepth1555;
         private System.Windows.Forms.RadioButton bitdepth565;
@@ -345,7 +345,7 @@
         private System.Windows.Forms.TextBox cmpOrGobPath;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.PictureBox pictureBox3;
+        private PictureBoxNN pictureBox3;
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.RadioButton bitdepthSolid;

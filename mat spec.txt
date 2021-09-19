@@ -1,6 +1,26 @@
 // MAT header
 // NOTE: the RGB shift and/or RGB bits values may be in an incorrect order. JKSpecs reports these fields as
 // unknown values. BoBo Fett's mat-16 specification has these values listed in conflicting order (they don't match up with the comments, even)
+
+// from shiny
+/*typedef struct rdTexformat
+{
+    uint32_t is16bit;
+    uint32_t bpp;
+    uint32_t r_bits;
+    uint32_t g_bits;
+    uint32_t b_bits;
+    uint32_t r_shift;
+    uint32_t g_shift;
+    uint32_t b_shift;
+    uint32_t r_bitdiff;
+    uint32_t g_bitdiff;
+    uint32_t b_bitdiff;
+    uint32_t unk_40;
+    uint32_t unk_44;
+    uint32_t unk_48;
+} rdTexformat;*/
+
 struct tMAT_Header
 {
 	char verification[4];		// 'MAT '
