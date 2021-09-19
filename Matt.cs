@@ -633,7 +633,15 @@ namespace Matt
 
                             case Format.ARGB4444:
                                 {
+                                    ushort pixelword = 0;
 
+                                    pixelword |= (ushort)(src[0] * 0xF / 255);//blue
+                                    pixelword |= (ushort)((src[1] * 0xF / 255) << 4);//green
+                                    pixelword |= (ushort)((src[2] * 0xF / 255) << 8);//red
+                                    pixelword |= (ushort)((src[3] * 0xF / 255) << 12);//alpha
+
+                                    *((ushort*)dst) = pixelword;
+                                    dst += 2;
                                 }
                                 break;
                         }
