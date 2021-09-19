@@ -501,6 +501,24 @@ namespace Matt
                                     dst += 2;
                                 }
                                 break;
+
+                            case Format.ARGB1555:
+                                {
+                                    ushort pixelword = 0;
+
+                                    pixelword |= (ushort)(src[0] * 0x1F / 255);//blue
+                                    pixelword |= (ushort)((src[1] * 0x1F / 255) << 5);//green
+                                    pixelword |= (ushort)((src[2] * 0x1F / 255) << 10);//red
+
+                                    // first bit is trans(0)/opaque(1)..  shift everything left and then encode it
+                                    pixelword <<= 1;
+                                    if (src[3] > 128)// lol some arbitrary alpha threshold
+                                        pixelword |= 1;// opaque
+
+                                    *((ushort*)dst) = pixelword;
+                                    dst += 2;
+								}
+                                break;
                         }
 
                         src += 4;
