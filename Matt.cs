@@ -283,10 +283,25 @@ namespace Matt
             {
                 if (!OpenedMAT && matOverride == null)
                 {
-                    if (OpenedBMP_ARGB)
-                        return LoadBMP_ARGB(OpenedImageFilePath);
+                    Bitmap imgBmp;
 
-                    return (Bitmap)Bitmap.FromFile(OpenedImageFilePath);
+                    if (OpenedBMP_ARGB)
+                        imgBmp = LoadBMP_ARGB(OpenedImageFilePath);
+
+                    imgBmp = (Bitmap)Bitmap.FromFile(OpenedImageFilePath);
+
+                    // if we want to fill BG then do an extra compositing step;  otherwise just directly return our loaded bmp
+                    if (!fillBGForTransparent)
+                        return imgBmp;
+
+                    Bitmap cbmp = new Bitmap(imgBmp.Width, imgBmp.Height, PixelFormat.Format32bppArgb);
+                    cbmp.SetResolution(imgBmp.HorizontalResolution, imgBmp.VerticalResolution);// force same DPI so Graphics.DrawImage doesnt try to be friggin "smart"
+                    using (Graphics gfx = Graphics.FromImage(cbmp))
+                    {
+                        gfx.FillRectangle(new SolidBrush(Color.FromArgb(255, 0, 255)), new Rectangle(0, 0, cbmp.Width, cbmp.Height));
+                        gfx.DrawImage(imgBmp, new Point(0, 0));
+                    }
+                    return cbmp;
                 }
 
                 Material mat = matOverride ?? LoadOriginalAsMaterial();
@@ -461,7 +476,7 @@ namespace Matt
 
 
                 bool needColormap;
-                pictureBox1.Image = GenerateBitmap(out needColormap, true, forceOriginalColormap);
+                pictureBox1.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, forceOriginalColormap);
                 originalNeedColormap.Visible = needColormap;
 
 
@@ -491,7 +506,7 @@ namespace Matt
             Material mat = GenerateOutputMat();
 
             bool needColormap;
-            pictureBox2.Image = GenerateBitmap(out needColormap, true, null/*no override*/, mat);
+            pictureBox2.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
         }
 
@@ -853,6 +868,11 @@ namespace Matt
                     MessageBox.Show($"No idea what extension {ext} is supposed to be");
                     return ImageFormat.Bmp;
             }
+        }
+
+        private void fillTransparent_CheckedChanged(object sender, EventArgs e)
+        {
+            Reprocess();
         }
     }
 }

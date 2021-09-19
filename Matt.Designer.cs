@@ -50,6 +50,7 @@
             this.originalKeepColormap = new System.Windows.Forms.Button();
             this.originalNeedColormap = new System.Windows.Forms.Label();
             this.previewNeedColormap = new System.Windows.Forms.Label();
+            this.fillTransparent = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -293,12 +294,26 @@
             this.previewNeedColormap.Text = "NEED COLORMAP";
             this.previewNeedColormap.Visible = false;
             // 
+            // fillTransparent
+            // 
+            this.fillTransparent.AutoSize = true;
+            this.fillTransparent.Checked = true;
+            this.fillTransparent.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.fillTransparent.Location = new System.Drawing.Point(378, 18);
+            this.fillTransparent.Name = "fillTransparent";
+            this.fillTransparent.Size = new System.Drawing.Size(160, 17);
+            this.fillTransparent.TabIndex = 13;
+            this.fillTransparent.Text = "Show transparent as fuchsia";
+            this.fillTransparent.UseVisualStyleBackColor = true;
+            this.fillTransparent.CheckedChanged += new System.EventHandler(this.fillTransparent_CheckedChanged);
+            // 
             // Matt
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.fillTransparent);
             this.Controls.Add(this.previewNeedColormap);
             this.Controls.Add(this.originalNeedColormap);
             this.Controls.Add(this.originalKeepColormap);
@@ -351,6 +366,7 @@
         private System.Windows.Forms.RadioButton bitdepth4444;
         private System.Windows.Forms.Label originalNeedColormap;
         private System.Windows.Forms.Label previewNeedColormap;
+        private System.Windows.Forms.CheckBox fillTransparent;
     }
 }
 
