@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Windows.Forms;
+using System.Runtime.InteropServices;
 using Smith;
 
 namespace Matt
@@ -256,6 +257,7 @@ namespace Matt
         }
 
         public string OpenedImageFilePath = string.Empty;
+        public bool OpenedBMP_ARGB = false;//flag to force using custom BMP load routine;  .NET doesnt support loading alpha channel, even though Bitmap does support it.. :P
         public bool OpenedMAT
         {
             get
@@ -280,7 +282,12 @@ namespace Matt
             try
             {
                 if (!OpenedMAT && matOverride == null)
+                {
+                    if (OpenedBMP_ARGB)
+                        return LoadBMP_ARGB(OpenedImageFilePath);
+
                     return (Bitmap)Bitmap.FromFile(OpenedImageFilePath);
+                }
 
                 Material mat = matOverride ?? LoadOriginalAsMaterial();
                 Colormap cmp = cmpOverride ?? GetCurrentColormap();
@@ -293,6 +300,84 @@ namespace Matt
             catch
             {
                 return null;
+            }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Pack = 2, CharSet = CharSet.Ansi)]
+        private struct BITMAPHEADER
+        {
+            public UInt16 bfType;
+            public UInt32 bfSize;
+            public UInt16 bfReserved1;
+            public UInt16 bfReserved2;
+            public UInt32 bfOffBits;
+            public UInt32 biSize;
+            public Int32 biWidth;
+            public Int32 biHeight;
+            public UInt16 biPlanes;
+            public UInt16 biBitCount;
+            public UInt32 biCompression;
+            public UInt32 biSizeImage;
+            public Int32 biXPelsPerMeter;
+            public Int32 biYPelsPerMeter;
+            public UInt32 biClrUsed;
+            public UInt32 biClrImportant;
+        }
+
+        unsafe static Bitmap LoadBMP_ARGB(string filename)
+        {
+            byte[] bmpFileBytes = File.ReadAllBytes(filename);
+
+            BITMAPHEADER* pBH = stackalloc BITMAPHEADER[1];
+            Marshal.Copy(bmpFileBytes, 0, (IntPtr)(pBH), Marshal.SizeOf(typeof(BITMAPHEADER)));
+
+            if (pBH->biBitCount != 32)
+                return null;
+
+            fixed (byte* pbmpFileBytes = bmpFileBytes)
+            {
+                int w = pBH->biWidth;
+                int h;
+                bool inv;
+
+                if (pBH->biHeight < 0)
+                {
+                    h = -pBH->biHeight;
+                    inv = false;
+                }
+                else
+                {
+                    h = pBH->biHeight;
+                    inv = true;
+                }
+
+                Bitmap bmp = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+                BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, w, h), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
+
+                byte* pSrc = (byte*)((ulong)pbmpFileBytes + (ulong)pBH->bfOffBits);
+                int stride = (w * 4 + 7) & ~7;
+
+                for (int y = 0; y < h; y++)
+                {
+                    byte* pSrcRow = (byte*)((ulong)pSrc + (ulong)(stride * (inv ? (h - y - 1) : y)));
+                    byte* pDstRow = (byte*)((ulong)bmdat.Scan0 + (ulong)(y * bmdat.Stride));
+
+                    for (int x = 0; x < w; x++)
+                    {
+                        pDstRow[0] = pSrcRow[0];
+                        pDstRow[1] = pSrcRow[1];
+                        pDstRow[2] = pSrcRow[2];
+                        pDstRow[3] = pSrcRow[3];
+
+                        pDstRow += 4;
+                        pSrcRow += 4;
+                    }
+                }
+
+
+                bmp.UnlockBits(bmdat);
+
+                return bmp;
             }
         }
 
@@ -321,8 +406,14 @@ namespace Matt
                                     CurrentFormat = Format.RGB565;
                                     break;
 
-                                case PixelFormat.Format32bppArgb:
+                                /*case PixelFormat.Format32bppArgb:
                                     CurrentFormat = Format.ARGB1555;
+                                    break;*/
+
+                                // .NET is dumb and loads 32bit ARGB  *.bmp  as  32bit RGB  and doesnt keep the alpha channel.. set flag to use our own routine
+                                case PixelFormat.Format32bppRgb:
+                                    CurrentFormat = Format.ARGB1555;
+                                    OpenedBMP_ARGB = true;
                                     break;
                             }
 
@@ -539,6 +630,12 @@ namespace Matt
                                     dst += 2;
 								}
                                 break;
+
+                            case Format.ARGB4444:
+                                {
+
+                                }
+                                break;
                         }
 
                         src += 4;
@@ -610,6 +707,7 @@ namespace Matt
                 return;
 
             OpenedImageFilePath = filename;
+            OpenedBMP_ARGB = false;//reset flag.. we handle this within ReloadOriginal
 
             ReloadOriginal(true);
         }
