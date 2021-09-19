@@ -27,7 +27,7 @@ namespace Smith
             public List<byte[]> MipmapData = new List<byte[]>();
         }
 
-        public int TransparentColor = 0;
+        //public int TransparentColor = 0;
         public int ColorBits = 0;
         public int BlueBits = 0;
         public int GreenBits = 0;
@@ -182,7 +182,7 @@ namespace Smith
                             byte b = pMipmapRow[x];
 
                             // if transparent pixel;  we have already filled the background
-                            if(th.Transparent && b == TransparentColor)
+                            if(th.Transparent && b == 0/*color key?  or just 0*/)
                                 continue;
 
                             Colormap.RGB rgb = cmp.Palette[b];
@@ -336,7 +336,7 @@ namespace Smith
             bw.Write(2);    // type
             bw.Write(Materials.Count);    // nummaterials
             bw.Write(Textures.Count);    // numtextures
-            bw.Write(TransparentColor);    // transparency value
+            bw.Write(ColorBits > 8 ? 1 : 0);    // is16bit
             bw.Write(ColorBits);    // colorbits
             bw.Write(BlueBits);    // bluebits
             bw.Write(GreenBits);    // greenbits
@@ -422,7 +422,7 @@ namespace Smith
             int type = br.ReadInt32();
             int numMaterials = br.ReadInt32();
             int numTextures = br.ReadInt32();
-            TransparentColor = br.ReadInt32();
+            int is16bit = br.ReadInt32();
             ColorBits = br.ReadInt32();
             BlueBits = br.ReadInt32();
             GreenBits = br.ReadInt32();
@@ -432,7 +432,8 @@ namespace Smith
             // JKPaint support
             if (ColorBits == 16 && RedBits == 0 && GreenBits == 0 && BlueBits == 0)
             {
-                if (TransparentColor == 1)
+                // DUNNO
+                if (is16bit == 1)
                 {
                     RedBits = 5;
                     GreenBits = 6;

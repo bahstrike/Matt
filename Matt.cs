@@ -121,6 +121,8 @@ namespace Matt
 
             if(File.Exists(cmpFile) && Path.GetExtension(cmpFile).Equals(".gob", StringComparison.InvariantCultureIgnoreCase))
             {
+                gobColormap.Items.Clear();
+
                 using (GOB gob = new GOB(Path.GetFileName(cmpFile), File.OpenRead(cmpFile)))
                     foreach (string s in gob.GetFilesWithExtension("cmp"))
                     {
