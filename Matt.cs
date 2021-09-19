@@ -264,7 +264,7 @@ namespace Matt
                 return new Material(Path.GetFileName(OpenedImageFilePath), s);
         }
 
-        public Bitmap GenerateBitmap(out bool failedToNoColormap, Colormap cmpOverride=null, Material matOverride=null)
+        public Bitmap GenerateBitmap(out bool failedToNoColormap, bool fillBGForTransparent, Colormap cmpOverride=null, Material matOverride=null, int index=0)
         {
             failedToNoColormap = false;
 
@@ -277,7 +277,7 @@ namespace Matt
                 Colormap cmp = cmpOverride ?? GetCurrentColormap();
 
                 Bitmap bmp;
-                mat.GenerateBitmap(out bmp, cmp, out failedToNoColormap);
+                mat.GenerateBitmap(out bmp, cmp, out failedToNoColormap, fillBGForTransparent, index);
 
                 return bmp;
             }
@@ -355,7 +355,7 @@ namespace Matt
 
 
                 bool needColormap;
-                pictureBox1.Image = GenerateBitmap(out needColormap, forceOriginalColormap);
+                pictureBox1.Image = GenerateBitmap(out needColormap, true, forceOriginalColormap);
                 originalNeedColormap.Visible = needColormap;
 
 
@@ -385,20 +385,22 @@ namespace Matt
             Material mat = GenerateOutputMat();
 
             bool needColormap;
-            pictureBox2.Image = GenerateBitmap(out needColormap, null/*no override*/, mat);
+            pictureBox2.Image = GenerateBitmap(out needColormap, true, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
         }
 
         unsafe Material GenerateOutputMat()
         {
-            // uhm cheap hack-  we already loaded the full bitmap into a picturebox.. so steal it from there
-            Bitmap bmp = pictureBox1.Image as Bitmap;
+            bool needColormap;
+            Bitmap bmp = GenerateBitmap(out needColormap, false, forceOriginalColormap);
             if (bmp == null)
                 return null;
 
             Format fmt = CurrentFormat;
             Colormap cmp = GetCurrentColormap();
             int clrIndex = CurrentColorIndex;
+
+            bool supportsTransparency = (fmt == Format.Paletted || fmt == Format.ARGB1555 || fmt == Format.ARGB4444);
 
             // if 8bit we need a colormap
             if (cmp == null && (fmt == Format.Solid || fmt == Format.Paletted))
@@ -460,7 +462,7 @@ namespace Matt
             // one mipmap for now
             th.Width = bmpWidth;
             th.Height = bmpHeight;
-            th.Transparent = false;// donno
+            th.Transparent = supportsTransparency;// donno
 
             byte[] mipData = new byte[th.Width * th.Height * (mat.ColorBits / 8)];
             fixed(byte* _dst = mipData)
@@ -624,12 +626,12 @@ namespace Matt
             OpenOriginal(files[0]);
         }
 
-        void FillRectEmpty(Graphics gfx, Rectangle rc)
+        public static void FillRectEmpty(Graphics gfx, Rectangle rc)
         {
             gfx.FillRectangle(new HatchBrush(HatchStyle.LightDownwardDiagonal, Color.FromArgb(0, 0, 0), Color.FromArgb(60, 60, 60)), rc);
         }
 
-        private void image_Paint(object sender, PaintEventArgs e)
+        private void colormap_Paint(object sender, PaintEventArgs e)
         {
             PictureBox pb = sender as PictureBox;
             if (pb == null)
@@ -674,7 +676,8 @@ namespace Matt
             } else
             {
                 // whatever random image file from bitmap..   just save "original" bitmap
-                Bitmap bmp = pictureBox1.Image as Bitmap;
+                bool needColormap;
+                Bitmap bmp = GenerateBitmap(out needColormap, false, forceOriginalColormap);
                 if (bmp == null)
                     return;
 

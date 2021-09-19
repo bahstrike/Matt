@@ -58,7 +58,7 @@
     <Compile Include="Matt.Designer.cs">
       <DependentUpon>Matt.cs</DependentUpon>
     </Compile>
-    <Compile Include="PictureBoxNN.cs">
+    <Compile Include="PictureBoxMaterial.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Program.cs" />

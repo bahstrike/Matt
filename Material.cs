@@ -71,9 +71,10 @@ namespace Smith
             return true;
         }
 
-        public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, out bool failedToNoColormap, int index = 0)
+        public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, out bool failedToNoColormap, bool fillBGForTransparent, int index = 0)
         {
             failedToNoColormap = false;
+
 
             bmp = null;
 
@@ -98,7 +99,6 @@ namespace Smith
                 }
 
                 Colormap.RGB rgb = cmp.Palette[mh.colorIndex];
-
                 bmp = new Bitmap(ColorMaterialSize, ColorMaterialSize, PixelFormat.Format24bppRgb);
                 using (Graphics gfx = Graphics.FromImage(bmp))
                     gfx.FillRectangle(new SolidBrush(Color.FromArgb(rgb.R, rgb.G, rgb.B)), new Rectangle(0, 0, bmp.Width, bmp.Height));
@@ -149,6 +149,23 @@ namespace Smith
             }
 
             bmp = new Bitmap(th.Width, th.Height, PixelFormat.Format32bppArgb);   // assuming no transparency for now
+
+            Color transColor = Color.FromArgb(255, 0, 255);
+
+            // fill background with 0,0,0,0  or  255,0,255 (or whatever) based on render preference
+            using (Graphics gfx = Graphics.FromImage(bmp))
+            {
+                gfx.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+
+                if (fillBGForTransparent)
+                    // transparent as magenta?
+                    gfx.FillRectangle(new SolidBrush(transColor), new Rectangle(0, 0, bmp.Width, bmp.Height));
+                else
+                    // transparent as 0,0,0,0
+                    gfx.FillRectangle(new SolidBrush(Color.FromArgb(0, 0, 0, 0)), new Rectangle(0, 0, bmp.Width, bmp.Height));
+            }
+
+            // now we lock-down and fill valid pixels
             BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             fixed (byte* pMipmap = mipmap)
             {
@@ -164,12 +181,16 @@ namespace Smith
                         {
                             byte b = pMipmapRow[x];
 
+                            // if transparent pixel;  we have already filled the background
+                            if(th.Transparent && b == TransparentColor)
+                                continue;
+
                             Colormap.RGB rgb = cmp.Palette[b];
 
-                            pBMPRow[x * 4 + 0] = rgb.B;                                                              // blue
-                            pBMPRow[x * 4 + 1] = rgb.G;                                                              // green
-                            pBMPRow[x * 4 + 2] = rgb.R;                                                              // red
-                            pBMPRow[x * 4 + 3] = (byte)((th.Transparent && b == TransparentColor) ? 0 : 255);        // alpha
+                            pBMPRow[x * 4 + 0] = rgb.B;     // blue
+                            pBMPRow[x * 4 + 1] = rgb.G;     // green
+                            pBMPRow[x * 4 + 2] = rgb.R;     // red
+                            pBMPRow[x * 4 + 3] = 255;       // alpha
                         }
                     }
                 }

@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new PictureBoxNN();
+            this.pictureBox1 = new PictureBoxMaterial();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new PictureBoxNN();
+            this.pictureBox2 = new PictureBoxMaterial();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
             this.bitdepth4444 = new System.Windows.Forms.RadioButton();
@@ -39,7 +39,7 @@
             this.bitdepth565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
             this.colormapGroup = new System.Windows.Forms.GroupBox();
-            this.pictureBox3 = new PictureBoxNN();
+            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.cmpOrGobPath = new System.Windows.Forms.TextBox();
@@ -66,7 +66,6 @@
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
-            this.pictureBox1.Paint += new System.Windows.Forms.PaintEventHandler(this.image_Paint);
             // 
             // label1
             // 
@@ -95,7 +94,6 @@
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
-            this.pictureBox2.Paint += new System.Windows.Forms.PaintEventHandler(this.image_Paint);
             // 
             // groupBox2
             // 
@@ -192,7 +190,7 @@
             this.pictureBox3.Size = new System.Drawing.Size(225, 137);
             this.pictureBox3.TabIndex = 5;
             this.pictureBox3.TabStop = false;
-            this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.image_Paint);
+            this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.colormap_Paint);
             // 
             // label4
             // 
@@ -331,10 +329,10 @@
         }
 
         #endregion
-        private PictureBoxNN pictureBox1;
+        private PictureBoxMaterial pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private PictureBoxNN pictureBox2;
+        private PictureBoxMaterial pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton bitdepth1555;
         private System.Windows.Forms.RadioButton bitdepth565;
@@ -345,7 +343,7 @@
         private System.Windows.Forms.TextBox cmpOrGobPath;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private PictureBoxNN pictureBox3;
+        private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.RadioButton bitdepthSolid;
