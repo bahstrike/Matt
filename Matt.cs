@@ -328,8 +328,14 @@ namespace Matt
 
                         }
                         else if (OpenedImageFilePath.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase))
-                            // i dunno maybe select 1555 for PNGs cause they might default to having transparency
-                            CurrentFormat = Format.ARGB1555;
+                        {
+                            Bitmap bmp = (Bitmap)Image.FromFile(OpenedImageFilePath);// yea we're temp-loading the whole image just for properties..  who cares; computers are fast now
+
+                            if ((bmp.Flags & 0x02) != 0)// check transparency flag?
+                                CurrentFormat = Format.ARGB1555;
+                            else
+                                CurrentFormat = Format.RGB565;
+                        }
                         else if (OpenedImageFilePath.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase))
                             // GIF is by nature only 256 color  so if someones using that, they prolly want to make an 8bit tex
                             CurrentFormat = Format.Paletted;
@@ -519,12 +525,17 @@ namespace Matt
                                     pixelword |= (ushort)((src[1] * 0x1F / 255) << 5);//green
                                     pixelword |= (ushort)((src[2] * 0x1F / 255) << 10);//red
 
+#if true
+                                    if (src[3] > 128)// lol some arbitrary alpha threshold
+                                        pixelword |= 1 << 15;
+#else
                                     // first bit is trans(0)/opaque(1)..  shift everything left and then encode it
                                     pixelword <<= 1;
                                     if (src[3] > 128)// lol some arbitrary alpha threshold
                                         pixelword |= 1;// opaque
+#endif
 
-                                    *((ushort*)dst) = pixelword;
+                                        *((ushort*)dst) = pixelword;
                                     dst += 2;
 								}
                                 break;

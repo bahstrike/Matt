@@ -211,6 +211,25 @@ namespace Smith
                                 ushort pixelword = pMipmapRow[x];
 
 #if true
+                                // MIGHT BE THE REAL ONE NOW
+
+                                if ((pixelword & 0x8000) != 0)
+                                {
+                                    // opaque
+                                    pBMPRow[x * 4 + 0] = (byte)((double)(pixelword & 0x1F) / (double)0x1F * 255.0);		// blue
+                                    pBMPRow[x * 4 + 1] = (byte)((double)((pixelword >> 5) & 0x1F) / (double)0x1F * 255.0);	// green
+                                    pBMPRow[x * 4 + 2] = (byte)((double)((pixelword >> 10) & 0x1F) / (double)0x1F * 255.0);	// red
+                                    pBMPRow[x * 4 + 3] = 255;                                                           // alpha
+                                }
+                                else
+                                {
+                                    // transparent
+                                    pBMPRow[x * 4 + 0] = 0;     // blue
+                                    pBMPRow[x * 4 + 1] = 0;     // green
+                                    pBMPRow[x * 4 + 2] = 0;     // red
+                                    pBMPRow[x * 4 + 3] = 0;     // alpha
+                                }
+#elif true
                                 // NEW METHOD;  works for indy
 
                                 if ((pixelword & 0x1) != 0)
