@@ -15,7 +15,7 @@ using Smith;
 
 namespace Matt
 {
-    public partial class MattMain : Form
+    public partial class Matt : Form
     {
         public enum Format
         {
@@ -90,7 +90,7 @@ namespace Matt
             }
         }
 
-        public MattMain()
+        public Matt()
         {
             InitializeComponent();
 
