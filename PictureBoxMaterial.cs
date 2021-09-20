@@ -13,7 +13,7 @@ namespace Matt
     {
         protected override void OnPaint(PaintEventArgs paintEventArgs)
         {
-            Matt.FillRectEmpty(paintEventArgs.Graphics, ClientRectangle);
+            MattMain.FillRectEmpty(paintEventArgs.Graphics, ClientRectangle);
 
             if (Image == null)
                 return;

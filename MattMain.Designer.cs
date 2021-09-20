@@ -1,6 +1,6 @@
 ﻿namespace Matt
 {
-    partial class Matt
+    partial class MattMain
     {
         /// <summary>
         /// Required designer variable.
