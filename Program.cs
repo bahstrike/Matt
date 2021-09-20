@@ -17,6 +17,21 @@ namespace Matt
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Matt());
+
+#if DEBUG
+            // if we're done, then kill temp files
+            foreach (string tmpfile in new string[] { Log.Filename })
+            {
+                try
+                {
+                    System.IO.File.Delete(tmpfile);
+                }
+                catch
+                {
+
+                }
+            }
+#endif
         }
     }
 }

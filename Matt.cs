@@ -14,9 +14,11 @@ using System.Runtime.InteropServices;
 using Smith;
 
 namespace Matt
-{
+{ 
     public partial class Matt : Form
     {
+        public static Matt inst;
+
         public enum Format
         {
             Solid,
@@ -94,8 +96,22 @@ namespace Matt
         {
             InitializeComponent();
 
+            inst = this;
+
+
+
+            // lets begin
+            Log.Print("-------------------------------------");
+            Log.Print("             Matt Startup");
+            Log.Print("-------------------------------------");
+
+
 #if !SUPPORTINDY
             bitdepth4444.Visible = false;
+#endif
+
+#if !DEBUG
+            logList.Visible = false;
 #endif
         }
 
@@ -217,6 +233,8 @@ namespace Matt
 
         void UpdateCMP()
         {
+            Log.Print("UpdateCMP");
+
             Colormap cmp = GetCurrentColormap();
             if(cmp == null)
             {
@@ -398,6 +416,8 @@ namespace Matt
 
         public void ReloadOriginal(bool autoChangeOptions=false)
         {
+            Log.Print($"ReloadOriginal({autoChangeOptions})");
+
             try
             {
                 if (autoChangeOptions)
@@ -494,9 +514,11 @@ namespace Matt
 
         public void Reprocess(bool fromReloadOriginal=false)
         {
+            Log.Print($"Reprocess({fromReloadOriginal})");
+
             // if not from reloadoriginal,  maybe we just want to run that instead.
             // could be optimized if only changing output settings.. but who cares PCs are fast now
-            if(!fromReloadOriginal)
+            if (!fromReloadOriginal)
             {
                 ReloadOriginal();
                 return;
@@ -873,6 +895,43 @@ namespace Matt
         private void fillTransparent_CheckedChanged(object sender, EventArgs e)
         {
             Reprocess();
+        }
+
+        private void Matt_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
+
+            Log.Print("  ****  GRACEFUL FORM CLOSE  ****");
+            inst = null;
+        }
+    }
+
+
+
+    public static class Log
+    {
+        public const string Filename = "Matt.log";
+
+        public static void Print(string s)
+        {
+#if !DEBUG
+            return;
+#endif
+
+            File.AppendAllText(Filename, s + "\n");
+
+            if (Matt.inst != null)
+            {
+                ListBox loglb = Matt.inst.logList;
+
+                while (loglb.Items.Count > 100)
+                    loglb.Items.RemoveAt(0);
+
+                int i = loglb.Items.Add(s);
+                loglb.TopIndex = i;
+
+                loglb.Update();
+            }
         }
     }
 }

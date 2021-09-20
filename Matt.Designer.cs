@@ -51,6 +51,7 @@
             this.originalNeedColormap = new System.Windows.Forms.Label();
             this.previewNeedColormap = new System.Windows.Forms.Label();
             this.fillTransparent = new System.Windows.Forms.CheckBox();
+            this.logList = new System.Windows.Forms.ListBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -307,12 +308,22 @@
             this.fillTransparent.UseVisualStyleBackColor = true;
             this.fillTransparent.CheckedChanged += new System.EventHandler(this.fillTransparent_CheckedChanged);
             // 
+            // logList
+            // 
+            this.logList.FormattingEnabled = true;
+            this.logList.Location = new System.Drawing.Point(93, 12);
+            this.logList.Name = "logList";
+            this.logList.SelectionMode = System.Windows.Forms.SelectionMode.None;
+            this.logList.Size = new System.Drawing.Size(279, 121);
+            this.logList.TabIndex = 14;
+            // 
             // Matt
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.logList);
             this.Controls.Add(this.fillTransparent);
             this.Controls.Add(this.previewNeedColormap);
             this.Controls.Add(this.originalNeedColormap);
@@ -328,6 +339,7 @@
             this.Name = "Matt";
             this.Text = "Matt - BAH 2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Matt_FormClosed);
             this.Load += new System.EventHandler(this.Matt_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Matt_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Matt_DragEnter);
@@ -367,6 +379,7 @@
         private System.Windows.Forms.Label originalNeedColormap;
         private System.Windows.Forms.Label previewNeedColormap;
         private System.Windows.Forms.CheckBox fillTransparent;
+        public System.Windows.Forms.ListBox logList;
     }
 }
 
