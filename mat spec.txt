@@ -21,6 +21,9 @@
     uint32_t unk_48;
 } rdTexformat;*/
 
+// from shiny
+// MAT header  "type"   actually  specifies   type & 0x01   =   includes own palette dump at end of file
+
 struct tMAT_Header
 {
 	char verification[4];		// 'MAT '
