@@ -539,6 +539,35 @@ namespace Matt
             if (bmp == null)
                 return null;
 
+
+            // powers-of-2 automatic rescale
+            int newWidth = (int)Math.Pow(2.0, Math.Ceiling(Math.Log((double)bmp.Width) / Math.Log(2.0)));
+            int newHeight = (int)Math.Pow(2.0, Math.Ceiling(Math.Log((double)bmp.Height) / Math.Log(2.0)));
+
+            if (newWidth != bmp.Width || newHeight != bmp.Height)
+            {
+                Bitmap newBmp = new Bitmap(newWidth, newHeight, PixelFormat.Format32bppArgb);
+                newBmp.SetResolution(bmp.HorizontalResolution, bmp.VerticalResolution);
+
+                using (Graphics gfx = Graphics.FromImage(newBmp))
+                {
+                    gfx.CompositingMode = CompositingMode.SourceCopy;
+                    gfx.InterpolationMode = InterpolationMode.NearestNeighbor;
+                    gfx.PixelOffsetMode = PixelOffsetMode.HighQuality;
+
+                    using (ImageAttributes wrapMode = new ImageAttributes())
+                    {
+                        wrapMode.SetWrapMode(WrapMode.TileFlipXY);
+                        gfx.DrawImage(bmp, new Rectangle(0, 0, newWidth, newHeight), 0, 0, bmp.Width, bmp.Height, GraphicsUnit.Pixel, wrapMode);
+                    }
+                }
+
+                bmp.Dispose();
+                bmp = newBmp;
+            }
+            
+
+
             Format fmt = CurrentFormat;
             Colormap cmp = GetCurrentColormap();
             int clrIndex = CurrentColorIndex;
