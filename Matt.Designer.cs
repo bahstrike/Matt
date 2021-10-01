@@ -120,6 +120,7 @@
             this.bitdepthSolid.TabIndex = 4;
             this.bitdepthSolid.Text = "Solid color w/ colormap";
             this.bitdepthSolid.UseVisualStyleBackColor = true;
+            this.bitdepthSolid.Visible = false;
             this.bitdepthSolid.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
             // bitdepth4444
