@@ -416,6 +416,10 @@ namespace Matt
 
         public void ReloadOriginal(bool autoChangeOptions=false)
         {
+            // force-disable autoChangeOptions   if checkbox is off
+            autoChangeOptions &= autoselectFormat.Checked;
+
+
             Log.Print($"ReloadOriginal({autoChangeOptions})");
 
             try

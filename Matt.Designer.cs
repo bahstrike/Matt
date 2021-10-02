@@ -52,6 +52,7 @@
             this.previewNeedColormap = new System.Windows.Forms.Label();
             this.fillTransparent = new System.Windows.Forms.CheckBox();
             this.logList = new System.Windows.Forms.ListBox();
+            this.autoselectFormat = new System.Windows.Forms.CheckBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -301,7 +302,7 @@
             this.fillTransparent.AutoSize = true;
             this.fillTransparent.Checked = true;
             this.fillTransparent.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.fillTransparent.Location = new System.Drawing.Point(378, 18);
+            this.fillTransparent.Location = new System.Drawing.Point(337, 18);
             this.fillTransparent.Name = "fillTransparent";
             this.fillTransparent.Size = new System.Drawing.Size(160, 17);
             this.fillTransparent.TabIndex = 13;
@@ -315,8 +316,20 @@
             this.logList.Location = new System.Drawing.Point(93, 12);
             this.logList.Name = "logList";
             this.logList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.logList.Size = new System.Drawing.Size(279, 121);
+            this.logList.Size = new System.Drawing.Size(238, 121);
             this.logList.TabIndex = 14;
+            // 
+            // autoselectFormat
+            // 
+            this.autoselectFormat.AutoSize = true;
+            this.autoselectFormat.Checked = true;
+            this.autoselectFormat.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.autoselectFormat.Location = new System.Drawing.Point(337, 41);
+            this.autoselectFormat.Name = "autoselectFormat";
+            this.autoselectFormat.Size = new System.Drawing.Size(212, 17);
+            this.autoselectFormat.TabIndex = 15;
+            this.autoselectFormat.Text = "Autoselect format based on input image";
+            this.autoselectFormat.UseVisualStyleBackColor = true;
             // 
             // Matt
             // 
@@ -324,6 +337,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.autoselectFormat);
             this.Controls.Add(this.logList);
             this.Controls.Add(this.fillTransparent);
             this.Controls.Add(this.previewNeedColormap);
@@ -381,6 +395,7 @@
         private System.Windows.Forms.Label previewNeedColormap;
         private System.Windows.Forms.CheckBox fillTransparent;
         public System.Windows.Forms.ListBox logList;
+        private System.Windows.Forms.CheckBox autoselectFormat;
     }
 }
 
