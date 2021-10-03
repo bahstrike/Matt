@@ -127,7 +127,8 @@ namespace Matt
             if (!Path.GetExtension(cmpOrGobPath.Text).Equals(".cmp", StringComparison.InvariantCultureIgnoreCase))
                 return null;
 
-            cmp = new Colormap(Path.GetFileName(cmpOrGobPath.Text), File.OpenRead(cmpOrGobPath.Text));
+            using (Stream filehandle = File.OpenRead(cmpOrGobPath.Text))
+                cmp = new Colormap(Path.GetFileName(cmpOrGobPath.Text), filehandle);
 
             return cmp;
         }
