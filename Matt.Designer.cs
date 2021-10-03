@@ -313,10 +313,10 @@
             // logList
             // 
             this.logList.FormattingEnabled = true;
-            this.logList.Location = new System.Drawing.Point(93, 12);
+            this.logList.Location = new System.Drawing.Point(114, 12);
             this.logList.Name = "logList";
             this.logList.SelectionMode = System.Windows.Forms.SelectionMode.None;
-            this.logList.Size = new System.Drawing.Size(238, 121);
+            this.logList.Size = new System.Drawing.Size(217, 121);
             this.logList.TabIndex = 14;
             // 
             // autoselectFormat

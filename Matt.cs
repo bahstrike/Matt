@@ -747,6 +747,7 @@ namespace Matt
             OpenFileDialog ofd = new OpenFileDialog();
 
             ofd.Filter = $"{filterAllImages}|{filterMatFiles}|{filterImageFiles}";
+            ofd.Multiselect = true;
             ofd.FilterIndex = openLastFilterIndex ?? 0;
             try
             {
@@ -762,7 +763,38 @@ namespace Matt
 
             openLastFilterIndex = ofd.FilterIndex;
 
-            OpenOriginal(ofd.FileName);
+            OpenOriginal(ofd.FileNames);
+        }
+
+        void OpenOriginal(string[] filenames)
+        {
+            if (filenames == null || filenames.Length < 1)
+                return;
+
+
+            // default to batch convert?
+            if(filenames.Length > 1)
+            {
+                if(MessageBox.Show("Multiple files selected..\nProceed with batch or cancel?", "Initiate Batch Convert?", MessageBoxButtons.OKCancel) != DialogResult.OK)
+                    return;
+
+                BatchConvertInputs(filenames);
+
+                return;
+            }
+
+
+            // single file
+            OpenOriginal(filenames[0]);
+        }
+
+        void ClearOriginal()
+        {
+            OpenedImageFilePath = string.Empty;
+            OpenedBMP_ARGB = false;
+
+            // flush changes
+            ReloadOriginal();
         }
 
         void OpenOriginal(string filename)
@@ -834,10 +866,7 @@ namespace Matt
                 return;
 
             string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
-            if (files.Length < 1)
-                return;
-
-            OpenOriginal(files[0]);
+            OpenOriginal(files);
         }
 
         public static void FillRectEmpty(Graphics gfx, Rectangle rc)
@@ -883,11 +912,17 @@ namespace Matt
             saveLastFilterIndex = sfd.FilterIndex;
 
 
-            if (sfd.FileName.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase))
+            SaveCurrent(sfd.FileName);
+        }
+
+        void SaveCurrent(string filename)
+        {
+            if (filename.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase))
             {
                 Material mat = GenerateOutputMat();
-                mat.Save(sfd.FileName);
-            } else
+                mat.Save(filename);
+            }
+            else
             {
                 // whatever random image file from bitmap..   just save "original" bitmap
                 bool needColormap;
@@ -895,7 +930,7 @@ namespace Matt
                 if (bmp == null)
                     return;
 
-                bmp.Save(sfd.FileName, ImageFormatFromExtension(Path.GetExtension(sfd.FileName)));
+                bmp.Save(filename, ImageFormatFromExtension(Path.GetExtension(filename)));
             }
         }
 
@@ -937,8 +972,59 @@ namespace Matt
             Log.Print("  ****  GRACEFUL FORM CLOSE  ****");
             inst = null;
         }
-    }
 
+
+        void BatchConvertInputs(string[] filenames)
+        {
+            if (filenames == null || filenames.Length <= 0)
+                return;
+
+            // need a dump folder
+            FolderBrowserDialog fbd = new FolderBrowserDialog();
+            fbd.ShowNewFolderButton = true;
+            fbd.SelectedPath = Path.GetDirectoryName(filenames[0]);
+
+            if (fbd.ShowDialog() != DialogResult.OK)
+                return;
+
+
+            SaveFileDialog sfd = new SaveFileDialog();
+            sfd.InitialDirectory = fbd.SelectedPath;
+            sfd.RestoreDirectory = true;
+            sfd.CheckFileExists = false;
+            sfd.Filter = filterAllImages;
+            sfd.Title = "MAKE ANY file.XYZ WHERE .XYZ IS WUT U WANT";
+            sfd.FileName = "RENAME EXTENSION (filename doesnt matter).png";
+            if (sfd.ShowDialog() != DialogResult.OK)
+                return;
+
+            string desiredExt = Path.GetExtension(sfd.FileName);
+
+            foreach(string inputFile in filenames)
+            {
+                // whatever lets just do thru UI
+                OpenOriginal(inputFile);
+
+
+                string outputFile = Path.Combine(fbd.SelectedPath, Path.GetFileNameWithoutExtension(inputFile) + desiredExt);
+                SaveCurrent(outputFile);
+            }
+
+            ExplorerOpenFolder(fbd.SelectedPath);
+        }
+
+
+        void ExplorerOpenFolder(string path)
+        {
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo()
+            {
+                FileName = path,
+                UseShellExecute = true,
+                Verb = "open"
+            });
+        }
+
+    }
 
 
     public static class Log
