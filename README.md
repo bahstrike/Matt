@@ -1,6 +1,9 @@
 # Matt
 Modern utility for converting 8-bit/16-bit .MAT files to&from typical image files.
 
+Random list of games that might use .MAT files:
+- 
+
 ![sample screenshot](images/matt.png)
 
 ## Overview
@@ -81,13 +84,19 @@ However, if you want step-by-step instructions then please see below for specifi
 
 There are a couple more options which may assist with some tasks.
 
-#### `Keep Current Colormap`
+#### `Keep Current Colormap` _(button)_
 This is useful when having loaded an existing 8-bit .MAT that you want to save as a new .MAT that conforms to a different colormap.
 
 After you have loaded the .MAT file and found its appropriate colormap, click `Keep Current Colormap`  and any further colormap selections will only affect the output.
 
 
-#### `Show transparent as fuchsia`
+#### [ ] `Show transparent as fuchsia` _(checkbox)_
 Toggle whether to fill transparent pixels as pink, or let the  "invalid image area"  background lines show through.
 
 This is purely visual and has no effect on file output.
+
+
+#### [ ] `Autoselect format based on input image` _(checkbox)_
+Toggle whether to automatically change the `Material Format` options based upon the file you have loaded.
+
+This is useful to turn off when you want to lock-in your output settings, and drag a bunch of random files in.
