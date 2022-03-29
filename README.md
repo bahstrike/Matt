@@ -1,8 +1,6 @@
 # Matt
 Modern utility for converting 8-bit/16-bit .MAT files to&from typical image files.
 
-Random list of games that might use .MAT files:
-- 
 
 ![sample screenshot](images/matt.png)
 
