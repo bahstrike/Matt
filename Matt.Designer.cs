@@ -28,10 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new PictureBoxMaterial();
+            this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new PictureBoxMaterial();
+            this.pictureBox2 = new MattControls.PictureBoxMaterial();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
             this.bitdepth4444 = new System.Windows.Forms.RadioButton();
@@ -53,19 +53,27 @@
             this.fillTransparent = new System.Windows.Forms.CheckBox();
             this.logList = new System.Windows.Forms.ListBox();
             this.autoselectFormat = new System.Windows.Forms.CheckBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
             // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(12, 182);
+            this.pictureBox1.Location = new System.Drawing.Point(6, 20);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(256, 256);
+            this.pictureBox1.Size = new System.Drawing.Size(257, 243);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -73,7 +81,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(9, 166);
+            this.label1.Location = new System.Drawing.Point(3, 4);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(42, 13);
             this.label1.TabIndex = 1;
@@ -82,7 +90,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(286, 166);
+            this.label2.Location = new System.Drawing.Point(3, 4);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(45, 13);
             this.label2.TabIndex = 3;
@@ -90,16 +98,20 @@
             // 
             // pictureBox2
             // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(289, 182);
+            this.pictureBox2.Location = new System.Drawing.Point(6, 20);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(256, 256);
+            this.pictureBox2.Size = new System.Drawing.Size(254, 243);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
             // 
             // groupBox2
             // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox2.Controls.Add(this.bitdepthSolid);
             this.groupBox2.Controls.Add(this.bitdepth4444);
             this.groupBox2.Controls.Add(this.bitdepth1555);
@@ -172,6 +184,7 @@
             // 
             // colormapGroup
             // 
+            this.colormapGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.colormapGroup.BackColor = System.Drawing.SystemColors.Control;
             this.colormapGroup.Controls.Add(this.pictureBox3);
             this.colormapGroup.Controls.Add(this.label4);
@@ -278,7 +291,7 @@
             this.originalNeedColormap.AutoSize = true;
             this.originalNeedColormap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.originalNeedColormap.ForeColor = System.Drawing.Color.DarkOrange;
-            this.originalNeedColormap.Location = new System.Drawing.Point(155, 166);
+            this.originalNeedColormap.Location = new System.Drawing.Point(145, 4);
             this.originalNeedColormap.Name = "originalNeedColormap";
             this.originalNeedColormap.Size = new System.Drawing.Size(113, 13);
             this.originalNeedColormap.TabIndex = 11;
@@ -290,7 +303,7 @@
             this.previewNeedColormap.AutoSize = true;
             this.previewNeedColormap.Font = new System.Drawing.Font("Microsoft Sans Serif", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.previewNeedColormap.ForeColor = System.Drawing.Color.DarkOrange;
-            this.previewNeedColormap.Location = new System.Drawing.Point(432, 166);
+            this.previewNeedColormap.Location = new System.Drawing.Point(152, 4);
             this.previewNeedColormap.Name = "previewNeedColormap";
             this.previewNeedColormap.Size = new System.Drawing.Size(113, 13);
             this.previewNeedColormap.TabIndex = 12;
@@ -331,26 +344,44 @@
             this.autoselectFormat.Text = "Autoselect format based on input image";
             this.autoselectFormat.UseVisualStyleBackColor = true;
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.splitContainer1.Location = new System.Drawing.Point(12, 169);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.label1);
+            this.splitContainer1.Panel1.Controls.Add(this.pictureBox1);
+            this.splitContainer1.Panel1.Controls.Add(this.originalNeedColormap);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.label2);
+            this.splitContainer1.Panel2.Controls.Add(this.pictureBox2);
+            this.splitContainer1.Panel2.Controls.Add(this.previewNeedColormap);
+            this.splitContainer1.Size = new System.Drawing.Size(533, 269);
+            this.splitContainer1.SplitterDistance = 266;
+            this.splitContainer1.TabIndex = 16;
+            // 
             // Matt
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.autoselectFormat);
             this.Controls.Add(this.logList);
             this.Controls.Add(this.fillTransparent);
-            this.Controls.Add(this.previewNeedColormap);
-            this.Controls.Add(this.originalNeedColormap);
             this.Controls.Add(this.originalKeepColormap);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.openButton);
             this.Controls.Add(this.colormapGroup);
             this.Controls.Add(this.groupBox2);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.pictureBox2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.pictureBox1);
             this.Name = "Matt";
             this.Text = "Matt - BAH 2021";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
@@ -365,16 +396,22 @@
             this.colormapGroup.ResumeLayout(false);
             this.colormapGroup.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private PictureBoxMaterial pictureBox1;
+        private MattControls.PictureBoxMaterial pictureBox1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
-        private PictureBoxMaterial pictureBox2;
+        private MattControls.PictureBoxMaterial pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.RadioButton bitdepth1555;
         private System.Windows.Forms.RadioButton bitdepth565;
@@ -396,6 +433,7 @@
         private System.Windows.Forms.CheckBox fillTransparent;
         public System.Windows.Forms.ListBox logList;
         private System.Windows.Forms.CheckBox autoselectFormat;
+        private System.Windows.Forms.SplitContainer splitContainer1;
     }
 }
 

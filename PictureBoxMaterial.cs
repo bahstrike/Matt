@@ -7,13 +7,13 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-namespace Matt
+namespace MattControls
 {
     public class PictureBoxMaterial : PictureBox
     {
         protected override void OnPaint(PaintEventArgs paintEventArgs)
         {
-            Matt.FillRectEmpty(paintEventArgs.Graphics, ClientRectangle);
+            Matt.Matt.FillRectEmpty(paintEventArgs.Graphics, ClientRectangle);
 
             if (Image == null)
                 return;
