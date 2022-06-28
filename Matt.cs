@@ -23,9 +23,11 @@ namespace Matt
         {
             Solid,
             Paletted,
-            RGB565,
-            ARGB1555,
-            ARGB4444,
+            BGR565,
+            ABGR1555,
+            ABGR4444,
+            BGR24,
+            ABGR32
         }
 
         public int CurrentColorIndex = 0;
@@ -36,23 +38,17 @@ namespace Matt
             {
                 if (bitdepthSolid.Checked)
                     return Format.Solid;
-
                 if (bitdepth8.Checked)
                     return Format.Paletted;
-
-                if (bitdepth565.Checked)
-                    return Format.RGB565;
-
-                if (bitdepth1555.Checked)
-                    return Format.ARGB1555;
-
-#if SUPPORTINDY
-                if (bitdepth4444.Checked)
-                    return Format.ARGB4444;
-#endif
-
-                // donno
-                return Format.RGB565;
+                if (bgr565.Checked)
+                    return Format.BGR565;
+                if (abgr1555.Checked)
+                    return Format.ABGR1555;
+                if (abgr4444.Checked)
+                    return Format.ABGR4444;
+                if (bgr24.Checked)
+                    return Format.BGR24;
+                return Format.ABGR32;
             }
 
             set
@@ -67,19 +63,25 @@ namespace Matt
                         bitdepth8.Checked = true;
                         break;
 
-                    case Format.RGB565:
-                        bitdepth565.Checked = true;
+                    case Format.BGR565:
+                        bgr565.Checked = true;
                         break;
 
-                    case Format.ARGB1555:
-                        bitdepth1555.Checked = true;
+                    case Format.ABGR1555:
+                        abgr1555.Checked = true;
                         break;
 
-#if SUPPORTINDY
-                    case Format.ARGB4444:
-                        bitdepth4444.Checked = true;
+                    case Format.ABGR4444:
+                        abgr4444.Checked = true;
                         break;
-#endif
+
+                    case Format.BGR24:
+                        bgr24.Checked = true;
+                        break;
+
+                    case Format.ABGR32:
+                        abgr32.Checked = true;
+                        break;
                 }
             }
         }
@@ -104,11 +106,6 @@ namespace Matt
             Log.Print("-------------------------------------");
             Log.Print("             Matt Startup");
             Log.Print("-------------------------------------");
-
-
-#if !SUPPORTINDY
-            bitdepth4444.Visible = false;
-#endif
 
 #if !DEBUG
             logList.Visible = false;
@@ -326,8 +323,7 @@ namespace Matt
                 Material mat = matOverride ?? LoadOriginalAsMaterial();
                 Colormap cmp = cmpOverride ?? GetCurrentColormap();
 
-                Bitmap bmp;
-                mat.GenerateBitmap(out bmp, cmp, out failedToNoColormap, fillBGForTransparent, index);
+                mat.GenerateBitmap(out Bitmap bmp, cmp, out failedToNoColormap, fillBGForTransparent, index);
 
                 return bmp;
             }
@@ -408,7 +404,6 @@ namespace Matt
                     }
                 }
 
-
                 bmp.UnlockBits(bmdat);
 
                 return bmp;
@@ -419,7 +414,6 @@ namespace Matt
         {
             // force-disable autoChangeOptions   if checkbox is off
             autoChangeOptions &= autoselectFormat.Checked;
-
 
             Log.Print($"ReloadOriginal({autoChangeOptions})");
 
@@ -442,8 +436,14 @@ namespace Matt
                                     CurrentFormat = Format.Paletted;
                                     break;
 
+                                case PixelFormat.Format16bppRgb555:
+                                case PixelFormat.Format16bppRgb565:
+                                    CurrentFormat = Format.BGR565;
+                                    break;
+
                                 case PixelFormat.Format24bppRgb:
-                                    CurrentFormat = Format.RGB565;
+                                case PixelFormat.Format32bppRgb:
+                                    CurrentFormat = Format.BGR24;
                                     break;
 
                                 /*case PixelFormat.Format32bppArgb:
@@ -451,8 +451,8 @@ namespace Matt
                                     break;*/
 
                                 // .NET is dumb and loads 32bit ARGB  *.bmp  as  32bit RGB  and doesnt keep the alpha channel.. set flag to use our own routine
-                                case PixelFormat.Format32bppRgb:
-                                    CurrentFormat = Format.ARGB1555;
+                                case PixelFormat.Format32bppArgb:
+                                    CurrentFormat = Format.ABGR32;
                                     OpenedBMP_ARGB = true;
                                     break;
                             }
@@ -463,47 +463,47 @@ namespace Matt
                             Bitmap bmp = (Bitmap)Image.FromFile(OpenedImageFilePath);// yea we're temp-loading the whole image just for properties..  who cares; computers are fast now
 
                             if ((bmp.Flags & 0x02) != 0)// check transparency flag?
-                                CurrentFormat = Format.ARGB1555;
+                                CurrentFormat = Format.ABGR4444;
                             else
-                                CurrentFormat = Format.RGB565;
+                                CurrentFormat = Format.BGR565;
                         }
                         else if (OpenedImageFilePath.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase))
                             // GIF is by nature only 256 color  so if someones using that, they prolly want to make an 8bit tex
                             CurrentFormat = Format.Paletted;
                         else
-                            // everything else (jpgs basically) should default to 565..  cause most ppl prolly just want to do 16bit color mats
-                            CurrentFormat = Format.RGB565;
-                    } else
+                            // everything else (jpgs basically) should default to 565...  cause most ppl prolly just want to do 16bit color mats
+                            CurrentFormat = Format.BGR565;
+                    } 
+                    else
                     {
                         Material mat = LoadOriginalAsMaterial();
 
                         if (autoChangeOptions)
                         {
-                            if (mat.Materials.Count > 0)
-                                CurrentColorIndex = mat.Materials[0].colorIndex;
+                            if (mat.Records.Count > 0)
+                                CurrentColorIndex = mat.Records[0].colorIndex;
 
                             if (mat.IsSingleColor(0))
                                 CurrentFormat = Format.Solid;
-                            else if (mat.ColorBits == 8)
+                            else if (mat.format.Mode == MatColorMode.Indexed)
                                 CurrentFormat = Format.Paletted;
-                            else
-                            {
-                                if (mat.GreenBits == 6)
-                                    CurrentFormat = Format.RGB565;
-                                else if (mat.GreenBits == 5)
-                                    CurrentFormat = Format.ARGB1555;
-                                else if (mat.GreenBits == 4)
-                                    CurrentFormat = Format.ARGB4444;
-                            }
+                            else if (mat.format == ColorFormat.BGR565)
+                                CurrentFormat = Format.BGR565;
+                            else if (mat.format == ColorFormat.ABGR1555)
+                                CurrentFormat = Format.ABGR1555;
+                            else if (mat.format == ColorFormat.ABGR4444)
+                                CurrentFormat = Format.ABGR4444;
+                            else if (mat.format == ColorFormat.BGR24)
+                                CurrentFormat = Format.BGR24;
+                            else if (mat.format == ColorFormat.ABGR32)
+                                CurrentFormat = Format.ABGR32;
                         }
                     }
                 }
 
-
                 bool needColormap;
                 pictureBox1.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, forceOriginalColormap);
                 originalNeedColormap.Visible = needColormap;
-
 
                 // we are baking the "colorindex" rectangle into the colormap bitmap for now..  so regenerate it
                 UpdateCMP();
@@ -529,7 +529,6 @@ namespace Matt
                 return;
             }
 
-
             Material mat = GenerateOutputMat();
 
             bool needColormap;
@@ -543,7 +542,6 @@ namespace Matt
             Bitmap bmp = GenerateBitmap(out needColormap, false, forceOriginalColormap);
             if (bmp == null)
                 return null;
-
 
             // powers-of-2 automatic rescale
             int newWidth = (int)Math.Pow(2.0, Math.Ceiling(Math.Log((double)bmp.Width) / Math.Log(2.0)));
@@ -570,14 +568,12 @@ namespace Matt
                 bmp.Dispose();
                 bmp = newBmp;
             }
-            
-
 
             Format fmt = CurrentFormat;
             Colormap cmp = GetCurrentColormap();
             int clrIndex = CurrentColorIndex;
 
-            bool supportsTransparency = (fmt == Format.Paletted || fmt == Format.ARGB1555 || fmt == Format.ARGB4444);
+            bool supportsTransparency = (fmt == Format.Paletted || fmt == Format.ABGR1555 || fmt == Format.ABGR4444 || fmt == Format.ABGR32);
 
             // if 8bit we need a colormap
             if (cmp == null && (fmt == Format.Solid || fmt == Format.Paletted))
@@ -593,40 +589,35 @@ namespace Matt
                     break;
 
                 case Format.Paletted:
-                    mat.ColorBits = 8;
+                    mat.format = ColorFormat.Indexed;
                     break;
 
-                case Format.RGB565:
-                    mat.ColorBits = 16;
-                    mat.RedBits = 5;
-                    mat.GreenBits = 6;
-                    mat.BlueBits = 5;
+                case Format.BGR565:
+                    mat.format = ColorFormat.BGR565;
                     break;
 
-                case Format.ARGB1555:
-                    mat.ColorBits = 16;
-                    mat.RedBits = 5;
-                    mat.GreenBits = 5;
-                    mat.BlueBits = 5;
+                case Format.ABGR1555:
+                    mat.format = ColorFormat.ABGR1555;
                     break;
 
-                case Format.ARGB4444:
-                    mat.ColorBits = 16;
-                    mat.RedBits = 4;
-                    mat.GreenBits = 4;
-                    mat.BlueBits = 4;
+                case Format.ABGR4444:
+                    mat.format = ColorFormat.ABGR4444;
+                    break;
+
+                case Format.BGR24:
+                    mat.format = ColorFormat.BGR24;
+                    break;
+
+                case Format.ABGR32:
+                    mat.format = ColorFormat.ABGR32;
                     break;
             }
 
-
-            Material.MaterialHeader mh = new Material.MaterialHeader();
-            mat.Materials.Add(mh);
+            Material.Record mh = new Material.Record();
+            mat.Records.Add(mh);
 
             mh.colorIndex = clrIndex;
             mh.textureId = 0;
-
-
-
 
             Material.TextureHeader th = new Material.TextureHeader();
             mat.Textures.Add(th);
@@ -640,8 +631,10 @@ namespace Matt
             th.Width = bmpWidth;
             th.Height = bmpHeight;
             th.Transparent = supportsTransparency;// donno
+            th.TransparentColorNum = 0;
 
-            byte[] mipData = new byte[th.Width * th.Height * (mat.ColorBits / 8)];
+            int epixSize = (int)mat.format.Bpp / 8;
+            byte[] mipData = new byte[th.Width * th.Height * epixSize];
             fixed(byte* _dst = mipData)
             {
                 byte* dst = _dst;
@@ -657,64 +650,32 @@ namespace Matt
                     {
                         switch(fmt)
                         {
+                            case Format.Solid: break;
                             case Format.Paletted:
                                 {
-                                    if (src[3] < 255)   // if transparent (whats a good threshold?)  write a 0
-                                        *(dst++) = 0;
+                                    if (src[3] == 0)   // if transparent (whats a good threshold?)  write a 0
+                                        *(dst++) = (byte)th.TransparentColorNum;
                                     else
                                         *(dst++) = (byte)cmp.FindClosestColor(src[2], src[1], src[0], /*mh.colorIndex*/ 0/*is zero always transparent? if so, never select it for a valid color*/);
                                 }
                                 break;
-
-                            case Format.RGB565:
+                            default: // RGB(A)
                                 {
-                                    ushort pixelword = 0;
+                                    var pix = Color.FromArgb(src[3], src[2], src[1], src[0]);
+                                    var epix = Material.EncodePixel(pix, mat.format);
+                                    if (mat.format.Bpp == 16)
+                                        *((ushort*)dst) = (ushort)epix;
+                                    if (mat.format.Bpp == 24)
+                                    {
+                                        dst[0] = (byte)(epix & 0xFF);
+                                        dst[1] = (byte)((epix >> 8) & 0xFF);
+                                        dst[2] = (byte)((epix >> 16) & 0xFF);
+                                    }
+                                    else
+                                        *((uint*)dst) = (uint)epix;
 
-                                    pixelword |= (ushort)(src[0] * 0x1F / 255);//blue
-                                    pixelword |= (ushort)((src[1] * 0x3F / 255) << 5);//green
-                                    pixelword |= (ushort)((src[2] * 0x1F / 255) << 11);//red
-
-                                    *((ushort*)dst) = pixelword;
-                                    dst += 2;
-                                }
-                                break;
-
-                            case Format.ARGB1555:
-                                {
-                                    ushort pixelword = 0;
-
-                                    pixelword |= (ushort)(src[0] * 0x1F / 255);//blue
-                                    pixelword |= (ushort)((src[1] * 0x1F / 255) << 5);//green
-                                    pixelword |= (ushort)((src[2] * 0x1F / 255) << 10);//red
-
-#if true
-                                    if (src[3] > 128)// lol some arbitrary alpha threshold
-                                        pixelword |= 1 << 15;
-#else
-                                    // first bit is trans(0)/opaque(1)..  shift everything left and then encode it
-                                    pixelword <<= 1;
-                                    if (src[3] > 128)// lol some arbitrary alpha threshold
-                                        pixelword |= 1;// opaque
-#endif
-
-                                        *((ushort*)dst) = pixelword;
-                                    dst += 2;
-								}
-                                break;
-
-                            case Format.ARGB4444:
-                                {
-                                    ushort pixelword = 0;
-
-                                    pixelword |= (ushort)(src[0] * 0xF / 255);//blue
-                                    pixelword |= (ushort)((src[1] * 0xF / 255) << 4);//green
-                                    pixelword |= (ushort)((src[2] * 0xF / 255) << 8);//red
-                                    pixelword |= (ushort)((src[3] * 0xF / 255) << 12);//alpha
-
-                                    *((ushort*)dst) = pixelword;
-                                    dst += 2;
-                                }
-                                break;
+                                    dst += epixSize;
+                                } break;
                         }
 
                         src += 4;
@@ -725,8 +686,6 @@ namespace Matt
                 bmp.UnlockBits(bmdat);
             }
             th.MipmapData.Add(mipData);
-
-
 
             return mat;
         }
@@ -974,7 +933,6 @@ namespace Matt
             inst = null;
         }
 
-
         void BatchConvertInputs(string[] filenames)
         {
             if (filenames == null || filenames.Length <= 0)
@@ -1026,7 +984,6 @@ namespace Matt
         }
 
     }
-
 
     public static class Log
     {
