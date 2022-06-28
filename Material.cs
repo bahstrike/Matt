@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
@@ -24,6 +24,7 @@ namespace Smith
             public int Width;
             public int Height;
             public bool Transparent;
+            public int TransparentColorNum;
             public List<byte[]> MipmapData = new List<byte[]>();
         }
 
@@ -182,11 +183,10 @@ namespace Smith
                             byte b = pMipmapRow[x];
 
                             // if transparent pixel;  we have already filled the background
-                            if(th.Transparent && b == 0/*color key?  or just 0*/)
+                            if (th.Transparent && b == th.TransparentColorNum) // guess based on OpenJKDF2 source code
                                 continue;
 
                             Colormap.RGB rgb = cmp.Palette[b];
-
                             pBMPRow[x * 4 + 0] = rgb.B;     // blue
                             pBMPRow[x * 4 + 1] = rgb.G;     // green
                             pBMPRow[x * 4 + 2] = rgb.R;     // red
@@ -418,7 +418,7 @@ namespace Smith
                 bw.Write(th.Height);
                 bw.Write(th.Transparent?1:0/*should be color value?*/);    // transparent
                 bw.Write(0);    // pad
-                bw.Write(0);    // pad
+                bw.Write(th.TransparentColorNum);
                 bw.Write(th.MipmapData.Count);    // mipmaps
 
                 // dump mips
@@ -492,7 +492,8 @@ namespace Smith
                 t.Width = br.ReadInt32();
                 t.Height = br.ReadInt32();
                 t.Transparent = (br.ReadInt32() != 0);
-                br.ReadBytes(8);
+                br.ReadBytes(4);
+                t.TransparentColorNum = br.ReadInt32();
 
                 int mipmapBufSize = (t.Width * t.Height * ColorBits) / 8;
                 int numMipmaps = br.ReadInt32();
