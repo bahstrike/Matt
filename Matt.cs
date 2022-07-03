@@ -442,7 +442,6 @@ namespace Matt
                                     break;
 
                                 case PixelFormat.Format24bppRgb:
-                                case PixelFormat.Format32bppRgb:
                                     CurrentFormat = Format.BGR24;
                                     break;
 
@@ -451,7 +450,7 @@ namespace Matt
                                     break;*/
 
                                 // .NET is dumb and loads 32bit ARGB  *.bmp  as  32bit RGB  and doesnt keep the alpha channel.. set flag to use our own routine
-                                case PixelFormat.Format32bppArgb:
+                                case PixelFormat.Format32bppRgb:
                                     CurrentFormat = Format.ABGR32;
                                     OpenedBMP_ARGB = true;
                                     break;
