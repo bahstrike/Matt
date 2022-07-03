@@ -38,7 +38,7 @@ This application attempts to solve these deficiencies whilst also improving ease
 
 
 #### Development
-**Matt** implements the .MAT specification as elicited from JKSpecs, BoBo Fett's "mat-16 spec", shiny's contributions, and personal research.
+**Matt** implements the .MAT specification as elicited from JKSpecs, BoBo Fett's "mat-16 spec", smlu's contributions, shiny's contributions, and personal research.
 
 ---
 
