@@ -1,6 +1,8 @@
 # Matt
 Modern utility for converting 8-bit/16-bit .MAT files to&from typical image files.
 
+_NOTE: readme content/screenshots may be out-of-date, but still representative_
+
 
 ![sample screenshot](images/matt.png)
 
