@@ -7,13 +7,154 @@ using System.Drawing.Imaging;
 
 namespace Smith
 {
+    public enum MatColorMode : UInt32
+    {
+        Indexed = 0,
+        RGB     = 1,
+        RGBA    = 2
+    }
+
+    public class ColorFormat
+    {
+        public MatColorMode Mode;
+        public uint Bpp; // bits per pixel
+
+        public uint RedBpp;
+        public uint GreenBpp;
+        public uint BlueBpp;
+
+        public uint RedShl;
+        public uint GreenShl;
+        public uint BlueShl;
+
+        public uint RedShr;
+        public uint GreenShr;
+        public uint BlueShr;
+
+        public uint AlphaBpp;
+        public uint AlphaShl;
+        public uint AlphaShr;
+
+        public ColorFormat() { }
+
+        public ColorFormat(ref BinaryReader br)
+        {
+            Mode = (MatColorMode)br.ReadInt32();
+            Bpp  = br.ReadUInt32();
+
+            RedBpp   = br.ReadUInt32();
+            GreenBpp = br.ReadUInt32();
+            BlueBpp  = br.ReadUInt32();
+
+            RedShl   = br.ReadUInt32();
+            GreenShl = br.ReadUInt32();
+            BlueShl  = br.ReadUInt32();
+
+            RedShr   = br.ReadUInt32();
+            GreenShr = br.ReadUInt32();
+            BlueShr  = br.ReadUInt32();
+
+            AlphaBpp = br.ReadUInt32();
+            AlphaShl = br.ReadUInt32();
+            AlphaShr = br.ReadUInt32();
+        }
+
+        public void Save(ref BinaryWriter bw)
+        {
+            bw.Write((uint)Mode);
+            bw.Write(Bpp);
+
+            bw.Write(RedBpp);
+            bw.Write(GreenBpp);
+            bw.Write(BlueBpp);
+
+            bw.Write(RedShl);
+            bw.Write(GreenShl);
+            bw.Write(BlueShl);
+
+            bw.Write(RedShr);
+            bw.Write(GreenShr);
+            bw.Write(BlueShr);
+
+            bw.Write(AlphaBpp);
+            bw.Write(AlphaShl);
+            bw.Write(AlphaShr);
+        }
+
+        public static readonly ColorFormat Indexed = new ColorFormat()
+        { 
+            Mode = MatColorMode.Indexed,
+            Bpp  = 8,
+
+            RedBpp = 0, GreenBpp = 0, BlueBpp  = 0,
+            RedShl = 0, GreenShl = 0, BlueShl = 0,
+            RedShr = 0, GreenShr = 0, BlueShr = 0,
+            AlphaBpp = 0, AlphaShl = 0, AlphaShr = 0 
+        };
+
+        public static readonly ColorFormat ABGR32 = new ColorFormat()
+        { 
+            Mode = MatColorMode.RGBA,
+            Bpp  = 32,
+
+            RedBpp = 8, GreenBpp = 8, BlueBpp  = 8,
+            RedShl = 24, GreenShl = 16, BlueShl = 8,
+            RedShr = 0, GreenShr = 0, BlueShr = 0,
+            AlphaBpp = 8, AlphaShl = 0, AlphaShr = 0 
+        };
+
+        public static readonly ColorFormat BGR24 = new ColorFormat()
+        {
+            Mode = MatColorMode.RGB,
+            Bpp = 24,
+
+            RedBpp = 8, GreenBpp = 8, BlueBpp = 8,
+            RedShl = 16, GreenShl = 8, BlueShl = 0,
+            RedShr = 0, GreenShr = 0, BlueShr = 0,
+            AlphaBpp = 0, AlphaShl = 0, AlphaShr = 0
+        };
+
+        public static readonly ColorFormat ABGR1555 = new ColorFormat()
+        { 
+            Mode = MatColorMode.RGBA,
+            Bpp  = 16,
+
+            RedBpp = 5, GreenBpp = 5, BlueBpp  = 5,
+            RedShl = 11, GreenShl = 6, BlueShl = 1,
+            RedShr = 3, GreenShr = 3, BlueShr = 3,
+            AlphaBpp = 1, AlphaShl = 0, AlphaShr = 7 
+        };
+
+        public static readonly ColorFormat ABGR4444 = new ColorFormat()
+        { 
+            Mode = MatColorMode.RGBA,
+            Bpp  = 16,
+
+            RedBpp = 4, GreenBpp = 4, BlueBpp  = 4,
+            RedShl = 12, GreenShl = 8, BlueShl = 4,
+            RedShr = 4, GreenShr = 4, BlueShr = 4,
+            AlphaBpp = 4, AlphaShl = 0, AlphaShr = 4 
+        };
+
+        public static readonly ColorFormat BGR565 = new ColorFormat()
+        {
+            Mode = MatColorMode.RGB,
+            Bpp = 16,
+
+            RedBpp = 5, GreenBpp = 6, BlueBpp = 5,
+            RedShl = 11, GreenShl = 5, BlueShl = 0,
+            RedShr = 3, GreenShr = 2, BlueShr = 3,
+            AlphaBpp = 0, AlphaShl = 0, AlphaShr = 0
+        };
+    }
+
     public class Material
     {
         public readonly string Name;
 
-        public const int ColorMaterialSize = 64;
+        public const int ColorMaterialSize = 32;
 
-        public class MaterialHeader
+        public class Record
         {
             public int colorIndex;
             public int textureId;
@@ -24,16 +165,15 @@ namespace Smith
             public int Width;
             public int Height;
             public bool Transparent;
+            public int TransparentColorNum;
             public List<byte[]> MipmapData = new List<byte[]>();
         }
 
         //public int TransparentColor = 0;
-        public int ColorBits = 0;
-        public int BlueBits = 0;
-        public int GreenBits = 0;
-        public int RedBits = 0;
 
-        public List<MaterialHeader> Materials = new List<MaterialHeader>();
+        public ColorFormat format;
+
+        public List<Record> Records = new List<Record>();
         public List<TextureHeader> Textures = new List<TextureHeader>();
 
         public int Width
@@ -60,10 +200,10 @@ namespace Smith
 
         public bool IsSingleColor(int index = 0)
         {
-            if (index < 0 || index >= Materials.Count)
+            if (index < 0 || index >= Records.Count)
                 return false;// whatev
 
-            MaterialHeader mh = Materials[index];
+            Record mh = Records[index];
 
             if (mh.textureId != -1)
                 return false;
@@ -74,17 +214,15 @@ namespace Smith
         public unsafe void GenerateBitmap(out Bitmap bmp, Colormap cmp, out bool failedToNoColormap, bool fillBGForTransparent, int index = 0)
         {
             failedToNoColormap = false;
-
-
             bmp = null;
 
             //if (cmp == null)
             //    return;
 
-            if (index < 0 || index >= Materials.Count)
+            if (index < 0 || index >= Records.Count)
                 return;
 
-            MaterialHeader mh = Materials[index];
+            Record mh = Records[index];
 
             if (mh.textureId == -1)
             {
@@ -116,7 +254,7 @@ namespace Smith
                 return;
 
             bool hasSelfIlluminatedPixels = false;
-            if (ColorBits == 8)
+            if (format.Mode == MatColorMode.Indexed)
             {
                 if (cmp == null)
                 {
@@ -169,7 +307,7 @@ namespace Smith
             BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
             fixed (byte* pMipmap = mipmap)
             {
-                if (ColorBits == 8 && cmp != null)
+                if (format.Mode == MatColorMode.Indexed && cmp != null)
                 {
                     // 8-bit palette;  use colormap lookup
                     for (int y = 0; y < bmp.Height; y++)
@@ -182,11 +320,10 @@ namespace Smith
                             byte b = pMipmapRow[x];
 
                             // if transparent pixel;  we have already filled the background
-                            if(th.Transparent && b == 0/*color key?  or just 0*/)
+                            if (th.Transparent && b == th.TransparentColorNum) // guess based on OpenJKDF2 source code
                                 continue;
 
                             Colormap.RGB rgb = cmp.Palette[b];
-
                             pBMPRow[x * 4 + 0] = rgb.B;     // blue
                             pBMPRow[x * 4 + 1] = rgb.G;     // green
                             pBMPRow[x * 4 + 2] = rgb.R;     // red
@@ -194,132 +331,31 @@ namespace Smith
                         }
                     }
                 }
-                else if (ColorBits == 16)
+                else if (format.Mode == MatColorMode.RGB || format.Mode == MatColorMode.RGBA)
                 {
-                    // 16-bit
-
-                    if (GreenBits == 5)
+                    int pixsize = (int)format.Bpp / 8;
+                    int stride  = th.Width * pixsize;
+                    for (int y = 0; y < bmp.Height; y++)
                     {
-                        // 1555 ARGB
-                        for (int y = 0; y < bmp.Height; y++)
+                        byte* pBMPRow = (byte*)((ulong)bmdat.Scan0 + (ulong)(bmdat.Stride * y));
+                        byte* pRow    = pMipmap + y * stride;
+
+                        for (int x = 0; x < bmp.Width; x++)
                         {
-                            byte* pBMPRow = (byte*)((ulong)bmdat.Scan0 + (ulong)(bmdat.Stride * y));
-                            ushort* pMipmapRow = (ushort*)(pMipmap + y * (th.Width * 2));
-
-                            for (int x = 0; x < bmp.Width; x++)
+                            int epix = 0;
+                            switch (pixsize)
                             {
-                                ushort pixelword = pMipmapRow[x];
-
-#if true
-                                // MIGHT BE THE REAL ONE NOW
-
-                                if ((pixelword & 0x8000) != 0)
-                                {
-                                    // opaque
-                                    pBMPRow[x * 4 + 0] = (byte)((double)(pixelword & 0x1F) / (double)0x1F * 255.0);		// blue
-                                    pBMPRow[x * 4 + 1] = (byte)((double)((pixelword >> 5) & 0x1F) / (double)0x1F * 255.0);	// green
-                                    pBMPRow[x * 4 + 2] = (byte)((double)((pixelword >> 10) & 0x1F) / (double)0x1F * 255.0);	// red
-                                    pBMPRow[x * 4 + 3] = 255;                                                           // alpha
-                                }
-                                /*else
-                                {
-                                    // transparent
-                                    pBMPRow[x * 4 + 0] = 0;     // blue
-                                    pBMPRow[x * 4 + 1] = 0;     // green
-                                    pBMPRow[x * 4 + 2] = 0;     // red
-                                    pBMPRow[x * 4 + 3] = 0;     // alpha
-                                }*/
-#elif true
-                                // NEW METHOD;  works for indy
-
-                                if ((pixelword & 0x1) != 0)
-                                {
-                                    // opaque
-                                    pBMPRow[x * 4 + 0] = (byte)((double)((pixelword>>1) & 0x1F) / (double)0x1F * 255.0);		// blue
-                                    pBMPRow[x * 4 + 1] = (byte)((double)((pixelword>>6) & 0x1F) / (double)0x1F * 255.0);	// green
-                                    pBMPRow[x * 4 + 2] = (byte)((double)((pixelword>>11) & 0x1F) / (double)0x1F * 255.0);	// red
-                                    pBMPRow[x * 4 + 3] = 255;                                                           // alpha
-                                }
-                                else
-                                {
-                                    // transparent
-                                    pBMPRow[x * 4 + 0] = 0;     // blue
-                                    pBMPRow[x * 4 + 1] = 0;     // green
-                                    pBMPRow[x * 4 + 2] = 0;     // red
-                                    pBMPRow[x * 4 + 3] = 0;     // alpha
-                                }
-#else
-                                // OLD METHOD;  was in use for JK..  not totally confirmed if correct
-
-                                if ((pixelword & 0x8000) != 0)
-                                {
-                                    // opaque
-                                    pBMPRow[x * 4 + 0] = (byte)((double)(pixelword & 0x1F) / (double)0x1F * 255.0);		// blue
-                                    pBMPRow[x * 4 + 1] = (byte)((double)(pixelword & 0x3E0) / (double)0x3E0 * 255.0);	// green
-                                    pBMPRow[x * 4 + 2] = (byte)((double)(pixelword & 0x7C00) / (double)0x7C00 * 255.0);	// red
-                                    pBMPRow[x * 4 + 3] = 255;                                                           // alpha
-                                }
-                                else
-                                {
-                                    // transparent
-                                    pBMPRow[x * 4 + 0] = 0;     // blue
-                                    pBMPRow[x * 4 + 1] = 0;     // green
-                                    pBMPRow[x * 4 + 2] = 0;     // red
-                                    pBMPRow[x * 4 + 3] = 0;     // alpha
-                                }
-#endif
+                                case 2: epix = *(ushort*)&pRow[x * pixsize]; break;
+                                case 3: epix = (pRow[x * pixsize] | (pRow[x * pixsize + 1] << 8) | (pRow[x * pixsize + 2] << 16)); break;
+                                case 4: epix = *(int*)&pRow[x * pixsize]; break;
                             }
+
+                            var pix = DecodePixel(epix, format);
+                            pBMPRow[x * 4 + 0] = pix.B;
+                            pBMPRow[x * 4 + 1] = pix.G;
+                            pBMPRow[x * 4 + 2] = pix.R;
+                            pBMPRow[x * 4 + 3] = pix.A;
                         }
-                    }
-                    else if (GreenBits == 6)
-                    {
-                        // 565 RGB
-                        for (int y = 0; y < bmp.Height; y++)
-                        {
-                            byte* pBMPRow = (byte*)((ulong)bmdat.Scan0 + (ulong)(bmdat.Stride * y));
-                            ushort* pMipmapRow = (ushort*)(pMipmap + y * (th.Width * 2));
-
-                            for (int x = 0; x < bmp.Width; x++)
-                            {
-                                ushort pixelword = pMipmapRow[x];
-
-#if true
-                                pBMPRow[x * 4 + 0] = (byte)((pixelword & 0x1F) * 255 / 0x1F);	        // blue
-                                pBMPRow[x * 4 + 1] = (byte)(((pixelword >> 5) & 0x3F) * 255 / 0x3F);	// green
-                                pBMPRow[x * 4 + 2] = (byte)(((pixelword >> 11) & 0x1F) * 255 / 0x1F); 	// red
-                                pBMPRow[x * 4 + 3] = 255;                                               // alpha
-#else
-
-                                pBMPRow[x * 4 + 0] = (byte)((double)(pixelword & 0x1F) / (double)0x1F * 255.0);		// blue
-                                pBMPRow[x * 4 + 1] = (byte)((double)(pixelword & 0x7E0) / (double)0x7E0 * 255.0);	// green
-                                pBMPRow[x * 4 + 2] = (byte)((double)(pixelword & 0xF800) / (double)0xF800 * 255.0);	// red
-                                pBMPRow[x * 4 + 3] = 255;                                                           // alpha
-#endif
-                            }
-                        }
-                    }
-                    else if (GreenBits == 4)
-                    {
-                        // 4444 RGBA
-                        for (int y = 0; y < bmp.Height; y++)
-                        {
-                            byte* pBMPRow = (byte*)((ulong)bmdat.Scan0 + (ulong)(bmdat.Stride * y));
-                            ushort* pMipmapRow = (ushort*)(pMipmap + y * (th.Width * 2));
-
-                            for (int x = 0; x < bmp.Width; x++)
-                            {
-                                ushort pixelword = pMipmapRow[x];
-
-                                pBMPRow[x * 4 + 0] = (byte)(((pixelword>>4) & 0xF) * 255 / 0xF);	    // blue
-                                pBMPRow[x * 4 + 1] = (byte)(((pixelword >> 8) & 0xF) * 255 / 0xF);	    // green
-                                pBMPRow[x * 4 + 2] = (byte)(((pixelword >> 12) & 0xF) * 255 / 0xF); 	// red
-                                pBMPRow[x * 4 + 3] = (byte)((pixelword & 0xF) * 255 / 0xF);             // alpha
-                            }
-                        }
-                    }
-                    else
-                    {
-                        //Log.Error($"Unsupported 16-bit mat channel configuration {RedBits}{GreenBits}{BlueBits}");
                     }
                 }
                 else
@@ -353,38 +389,13 @@ namespace Smith
             bw.Write((byte)' ');
             bw.Write(0x32); // ver
             bw.Write(2);    // type
-            bw.Write(Materials.Count);    // nummaterials
+            bw.Write(Records.Count);    // nummaterials
             bw.Write(Textures.Count);    // numtextures
-            bw.Write(ColorBits > 8 ? 1 : 0);    // is16bit
-            bw.Write(ColorBits);    // colorbits
-            bw.Write(BlueBits);    // bluebits
-            bw.Write(GreenBits);    // greenbits
-            bw.Write(RedBits);    // redbits
 
-            // for paletted these are all 0?
-            if (ColorBits == 8)
-            {
-                bw.Write(0);// unknown
-                bw.Write(0);//unknown
-                bw.Write(0);//unknown
-                bw.Write(0);//unknown
-                bw.Write(0);//unknown
-                bw.Write(0);//unknown
-            }
-            else
-            {
-                bw.Write(0x0B);// unknown
-                bw.Write(0x05);//unknown
-                bw.Write(0);//unknown
-                bw.Write(0x03);//unknown
-                bw.Write(0x02);//unknown
-                bw.Write(0x03);//unknown
-            }
-            for (int x = 0; x < 3 * 4; x++)
-                bw.Write((byte)0);
+            format.Save(ref bw);
 
             int texIndex = 0;
-            foreach(MaterialHeader mh in Materials)
+            foreach(Record mh in Records)
             {
                 bw.Write(8);    // texture
 
@@ -418,7 +429,7 @@ namespace Smith
                 bw.Write(th.Height);
                 bw.Write(th.Transparent?1:0/*should be color value?*/);    // transparent
                 bw.Write(0);    // pad
-                bw.Write(0);    // pad
+                bw.Write(th.TransparentColorNum);
                 bw.Write(th.MipmapData.Count);    // mipmaps
 
                 // dump mips
@@ -433,42 +444,18 @@ namespace Smith
         {
             Name = n;
 
-
             BinaryReader br = new BinaryReader(s);
 
             br.ReadBytes(8);
 
             int type = br.ReadInt32();
-            int numMaterials = br.ReadInt32();
+            int numRecords  = br.ReadInt32();
             int numTextures = br.ReadInt32();
-            int is16bit = br.ReadInt32();
-            ColorBits = br.ReadInt32();
-            BlueBits = br.ReadInt32();
-            GreenBits = br.ReadInt32();
-            RedBits = br.ReadInt32();
-            br.ReadBytes(36);
+            format = new ColorFormat(ref br);
 
-            // JKPaint support
-            if (ColorBits == 16 && RedBits == 0 && GreenBits == 0 && BlueBits == 0)
+            for (int x = 0; x < numRecords; x++)
             {
-                // DUNNO
-                if (is16bit == 1)
-                {
-                    RedBits = 5;
-                    GreenBits = 6;
-                    BlueBits = 5;
-                }
-                else
-                {
-                    RedBits = 5;
-                    GreenBits = 5;
-                    BlueBits = 5;
-                }
-            }
-
-            for (int x = 0; x < numMaterials; x++)
-            {
-                MaterialHeader m = new MaterialHeader();
+                Record m = new Record();
 
                 int mtype = br.ReadInt32();
                 m.colorIndex = br.ReadInt32();
@@ -482,7 +469,7 @@ namespace Smith
                 else
                     m.textureId = -1;
 
-                Materials.Add(m);
+                Records.Add(m);
             }
 
             for (int x = 0; x < numTextures; x++)
@@ -492,10 +479,11 @@ namespace Smith
                 t.Width = br.ReadInt32();
                 t.Height = br.ReadInt32();
                 t.Transparent = (br.ReadInt32() != 0);
-                br.ReadBytes(8);
+                br.ReadBytes(4);
+                t.TransparentColorNum = br.ReadInt32();
 
-                int mipmapBufSize = (t.Width * t.Height * ColorBits) / 8;
-                int numMipmaps = br.ReadInt32();
+                int mipmapBufSize = (t.Width * t.Height * (int)format.Bpp) / 8;
+                int numMipmaps    = br.ReadInt32();
                 for (int y = 0; y < numMipmaps; y++)
                 {
                     t.MipmapData.Add(br.ReadBytes(mipmapBufSize));
@@ -504,6 +492,41 @@ namespace Smith
 
                 Textures.Add(t);
             }
+        }
+        static uint GetColorMask(uint bpc)
+        {
+            return 0xFFFFFFFF >> (32 - (int)bpc);
+        }
+
+        public static Color DecodePixel(int p, ColorFormat cf)
+        {
+            int r = ((p >> (int)cf.RedShl) & (int)GetColorMask(cf.RedBpp)) << (int)cf.RedShr;
+            int g = ((p >> (int)cf.GreenShl) & (int)GetColorMask(cf.GreenBpp)) << (int)cf.GreenShr;
+            int b = ((p >> (int)cf.BlueShl) & (int)GetColorMask(cf.BlueBpp)) << (int)cf.BlueShr;
+            int a = 255;
+            if (cf.AlphaBpp > 0)
+            {
+                a = ((p >> (int)cf.AlphaShl) & (int)GetColorMask(cf.AlphaBpp)) << (int)cf.AlphaShr;
+                if (cf.AlphaBpp == 1) // RGB5551
+                {
+                    a = a > 0 ? 255 : 0;
+                }
+            }
+            return Color.FromArgb(a, r, g, b);
+        }
+
+        public static int EncodePixel(Color p, ColorFormat cf)
+        {
+            int ep =
+            ((p.R >> (int)cf.RedShr) << (int)cf.RedShl) |
+            ((p.G >> (int)cf.GreenShr) << (int)cf.GreenShl) |
+            ((p.B >> (int)cf.BlueShr) << (int)cf.BlueShl);
+
+            if (cf.AlphaBpp != 0)
+            {
+                ep |= (p.A >> (int)cf.AlphaShr) << (int)cf.AlphaShl;
+            }
+            return ep;
         }
     }
 }

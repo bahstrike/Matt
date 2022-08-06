@@ -1,4 +1,4 @@
-﻿namespace Matt
+namespace Matt
 {
     partial class Matt
     {
@@ -28,15 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.pictureBox2 = new MattControls.PictureBoxMaterial();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.abgr32 = new System.Windows.Forms.RadioButton();
+            this.bgr24 = new System.Windows.Forms.RadioButton();
             this.bitdepthSolid = new System.Windows.Forms.RadioButton();
-            this.bitdepth4444 = new System.Windows.Forms.RadioButton();
-            this.bitdepth1555 = new System.Windows.Forms.RadioButton();
-            this.bitdepth565 = new System.Windows.Forms.RadioButton();
+            this.abgr4444 = new System.Windows.Forms.RadioButton();
+            this.abgr1555 = new System.Windows.Forms.RadioButton();
+            this.bgr565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
             this.colormapGroup = new System.Windows.Forms.GroupBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
@@ -54,8 +54,8 @@
             this.logList = new System.Windows.Forms.ListBox();
             this.autoselectFormat = new System.Windows.Forms.CheckBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            this.pictureBox1 = new MattControls.PictureBoxMaterial();
+            this.pictureBox2 = new MattControls.PictureBoxMaterial();
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -63,20 +63,9 @@
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.SuspendLayout();
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox1.Location = new System.Drawing.Point(6, 20);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(257, 243);
-            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox1.TabIndex = 0;
-            this.pictureBox1.TabStop = false;
             // 
             // label1
             // 
@@ -96,33 +85,44 @@
             this.label2.TabIndex = 3;
             this.label2.Text = "Preview";
             // 
-            // pictureBox2
-            // 
-            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox2.Location = new System.Drawing.Point(6, 20);
-            this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(254, 243);
-            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBox2.TabIndex = 2;
-            this.pictureBox2.TabStop = false;
-            // 
             // groupBox2
             // 
             this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.abgr32);
+            this.groupBox2.Controls.Add(this.bgr24);
             this.groupBox2.Controls.Add(this.bitdepthSolid);
-            this.groupBox2.Controls.Add(this.bitdepth4444);
-            this.groupBox2.Controls.Add(this.bitdepth1555);
-            this.groupBox2.Controls.Add(this.bitdepth565);
+            this.groupBox2.Controls.Add(this.abgr4444);
+            this.groupBox2.Controls.Add(this.abgr1555);
+            this.groupBox2.Controls.Add(this.bgr565);
             this.groupBox2.Controls.Add(this.bitdepth8);
-            this.groupBox2.Location = new System.Drawing.Point(551, 12);
+            this.groupBox2.Location = new System.Drawing.Point(554, 11);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(237, 164);
+            this.groupBox2.Size = new System.Drawing.Size(237, 176);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "Material Format";
+            // 
+            // abgr32
+            // 
+            this.abgr32.AutoSize = true;
+            this.abgr32.Location = new System.Drawing.Point(6, 157);
+            this.abgr32.Name = "abgr32";
+            this.abgr32.Size = new System.Drawing.Size(51, 17);
+            this.abgr32.TabIndex = 6;
+            this.abgr32.Text = "32-bit";
+            this.abgr32.UseVisualStyleBackColor = true;
+            this.abgr32.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            // 
+            // bgr24
+            // 
+            this.bgr24.AutoSize = true;
+            this.bgr24.Location = new System.Drawing.Point(6, 134);
+            this.bgr24.Name = "bgr24";
+            this.bgr24.Size = new System.Drawing.Size(51, 17);
+            this.bgr24.TabIndex = 5;
+            this.bgr24.Text = "24-bit";
+            this.bgr24.UseVisualStyleBackColor = true;
+            this.bgr24.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
             // bitdepthSolid
             // 
@@ -136,40 +136,40 @@
             this.bitdepthSolid.Visible = false;
             this.bitdepthSolid.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
-            // bitdepth4444
+            // abgr4444
             // 
-            this.bitdepth4444.AutoSize = true;
-            this.bitdepth4444.Location = new System.Drawing.Point(6, 111);
-            this.bitdepth4444.Name = "bitdepth4444";
-            this.bitdepth4444.Size = new System.Drawing.Size(159, 17);
-            this.bitdepth4444.TabIndex = 3;
-            this.bitdepth4444.Text = "16-bit 4444ARGB (Indy only)";
-            this.bitdepth4444.UseVisualStyleBackColor = true;
-            this.bitdepth4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            this.abgr4444.AutoSize = true;
+            this.abgr4444.Location = new System.Drawing.Point(6, 111);
+            this.abgr4444.Name = "abgr4444";
+            this.abgr4444.Size = new System.Drawing.Size(108, 17);
+            this.abgr4444.TabIndex = 3;
+            this.abgr4444.Text = "16-bit 4444ABGR";
+            this.abgr4444.UseVisualStyleBackColor = true;
+            this.abgr4444.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
-            // bitdepth1555
+            // abgr1555
             // 
-            this.bitdepth1555.AutoSize = true;
-            this.bitdepth1555.Location = new System.Drawing.Point(6, 88);
-            this.bitdepth1555.Name = "bitdepth1555";
-            this.bitdepth1555.Size = new System.Drawing.Size(108, 17);
-            this.bitdepth1555.TabIndex = 2;
-            this.bitdepth1555.Text = "16-bit 1555ARGB";
-            this.bitdepth1555.UseVisualStyleBackColor = true;
-            this.bitdepth1555.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            this.abgr1555.AutoSize = true;
+            this.abgr1555.Location = new System.Drawing.Point(6, 88);
+            this.abgr1555.Name = "abgr1555";
+            this.abgr1555.Size = new System.Drawing.Size(108, 17);
+            this.abgr1555.TabIndex = 2;
+            this.abgr1555.Text = "16-bit 1555ABGR";
+            this.abgr1555.UseVisualStyleBackColor = true;
+            this.abgr1555.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
-            // bitdepth565
+            // bgr565
             // 
-            this.bitdepth565.AutoSize = true;
-            this.bitdepth565.Checked = true;
-            this.bitdepth565.Location = new System.Drawing.Point(6, 65);
-            this.bitdepth565.Name = "bitdepth565";
-            this.bitdepth565.Size = new System.Drawing.Size(95, 17);
-            this.bitdepth565.TabIndex = 1;
-            this.bitdepth565.TabStop = true;
-            this.bitdepth565.Text = "16-bit 565RGB";
-            this.bitdepth565.UseVisualStyleBackColor = true;
-            this.bitdepth565.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
+            this.bgr565.AutoSize = true;
+            this.bgr565.Checked = true;
+            this.bgr565.Location = new System.Drawing.Point(6, 65);
+            this.bgr565.Name = "bgr565";
+            this.bgr565.Size = new System.Drawing.Size(95, 17);
+            this.bgr565.TabIndex = 1;
+            this.bgr565.TabStop = true;
+            this.bgr565.Text = "16-bit 565BGR";
+            this.bgr565.UseVisualStyleBackColor = true;
+            this.bgr565.CheckedChanged += new System.EventHandler(this.format_CheckedChanged);
             // 
             // bitdepth8
             // 
@@ -192,9 +192,9 @@
             this.colormapGroup.Controls.Add(this.cmpOrGobPath);
             this.colormapGroup.Controls.Add(this.label3);
             this.colormapGroup.Controls.Add(this.gobColormap);
-            this.colormapGroup.Location = new System.Drawing.Point(551, 182);
+            this.colormapGroup.Location = new System.Drawing.Point(551, 193);
             this.colormapGroup.Name = "colormapGroup";
-            this.colormapGroup.Size = new System.Drawing.Size(237, 256);
+            this.colormapGroup.Size = new System.Drawing.Size(237, 254);
             this.colormapGroup.TabIndex = 7;
             this.colormapGroup.TabStop = false;
             this.colormapGroup.Text = "Colormap";
@@ -202,9 +202,10 @@
             // pictureBox3
             // 
             this.pictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox3.Location = new System.Drawing.Point(6, 113);
+            this.pictureBox3.Location = new System.Drawing.Point(6, 106);
+            this.pictureBox3.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(225, 137);
+            this.pictureBox3.Size = new System.Drawing.Size(226, 143);
             this.pictureBox3.TabIndex = 5;
             this.pictureBox3.TabStop = false;
             this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.colormap_Paint);
@@ -212,7 +213,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(6, 70);
+            this.label4.Location = new System.Drawing.Point(6, 64);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(77, 13);
             this.label4.TabIndex = 4;
@@ -222,7 +223,7 @@
             // 
             this.button2.Location = new System.Drawing.Point(156, 30);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(75, 21);
             this.button2.TabIndex = 3;
             this.button2.Text = "Browse";
             this.button2.UseVisualStyleBackColor = true;
@@ -250,7 +251,7 @@
             this.gobColormap.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.gobColormap.Enabled = false;
             this.gobColormap.FormattingEnabled = true;
-            this.gobColormap.Location = new System.Drawing.Point(6, 86);
+            this.gobColormap.Location = new System.Drawing.Point(6, 80);
             this.gobColormap.Name = "gobColormap";
             this.gobColormap.Size = new System.Drawing.Size(144, 21);
             this.gobColormap.TabIndex = 0;
@@ -363,16 +364,44 @@
             this.splitContainer1.Panel2.Controls.Add(this.label2);
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox2);
             this.splitContainer1.Panel2.Controls.Add(this.previewNeedColormap);
-            this.splitContainer1.Size = new System.Drawing.Size(533, 269);
-            this.splitContainer1.SplitterDistance = 266;
+            this.splitContainer1.Size = new System.Drawing.Size(533, 279);
+            this.splitContainer1.SplitterDistance = 265;
             this.splitContainer1.TabIndex = 16;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(4, 24);
+            this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(258, 252);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 0;
+            this.pictureBox1.TabStop = false;
+            // 
+            // pictureBox2
+            // 
+            this.pictureBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBox2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox2.Location = new System.Drawing.Point(4, 24);
+            this.pictureBox2.Margin = new System.Windows.Forms.Padding(0);
+            this.pictureBox2.Name = "pictureBox2";
+            this.pictureBox2.Size = new System.Drawing.Size(256, 252);
+            this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox2.TabIndex = 2;
+            this.pictureBox2.TabStop = false;
             // 
             // Matt
             // 
             this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 460);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.autoselectFormat);
             this.Controls.Add(this.logList);
@@ -389,8 +418,6 @@
             this.Load += new System.EventHandler(this.Matt_Load);
             this.DragDrop += new System.Windows.Forms.DragEventHandler(this.Matt_DragDrop);
             this.DragEnter += new System.Windows.Forms.DragEventHandler(this.Matt_DragEnter);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             this.colormapGroup.ResumeLayout(false);
@@ -402,6 +429,8 @@
             this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -413,8 +442,8 @@
         private System.Windows.Forms.Label label2;
         private MattControls.PictureBoxMaterial pictureBox2;
         private System.Windows.Forms.GroupBox groupBox2;
-        private System.Windows.Forms.RadioButton bitdepth1555;
-        private System.Windows.Forms.RadioButton bitdepth565;
+        private System.Windows.Forms.RadioButton abgr1555;
+        private System.Windows.Forms.RadioButton bgr565;
         private System.Windows.Forms.RadioButton bitdepth8;
         private System.Windows.Forms.GroupBox colormapGroup;
         private System.Windows.Forms.ComboBox gobColormap;
@@ -427,13 +456,15 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.RadioButton bitdepthSolid;
         private System.Windows.Forms.Button originalKeepColormap;
-        private System.Windows.Forms.RadioButton bitdepth4444;
+        private System.Windows.Forms.RadioButton abgr4444;
         private System.Windows.Forms.Label originalNeedColormap;
         private System.Windows.Forms.Label previewNeedColormap;
         private System.Windows.Forms.CheckBox fillTransparent;
         public System.Windows.Forms.ListBox logList;
         private System.Windows.Forms.CheckBox autoselectFormat;
         private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.RadioButton abgr32;
+        private System.Windows.Forms.RadioButton bgr24;
     }
 }
 
