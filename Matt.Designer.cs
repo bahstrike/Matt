@@ -412,7 +412,7 @@ namespace Matt
             this.Controls.Add(this.colormapGroup);
             this.Controls.Add(this.groupBox2);
             this.Name = "Matt";
-            this.Text = "Matt - BAH 2021";
+            this.Text = "Matt - BAH 2022";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Matt_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.Matt_FormClosed);
             this.Load += new System.EventHandler(this.Matt_Load);
