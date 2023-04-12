@@ -32,6 +32,8 @@ namespace Matt
                 }
             }
 #endif
+
+            Properties.Settings.Default.Save();
         }
     }
 }

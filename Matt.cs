@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
@@ -83,14 +82,6 @@ namespace Matt
                         abgr32.Checked = true;
                         break;
                 }
-            }
-        }
-
-        private string INIFile
-        {
-            get
-            {
-                return Path.Combine(Directory.GetCurrentDirectory(), "Matt.ini");
             }
         }
 
@@ -193,17 +184,12 @@ namespace Matt
         private void Matt_Load(object sender, EventArgs e)
         {
             // load config
-            using (INIFile ini = new INIFile(INIFile))
-            {
-                cmpOrGobPath.Text = ini.GetKey("General", "CMPorGOB", string.Empty);
+            cmpOrGobPath.Text = Properties.Settings.Default.CMPorGOB;
 
-                int cmpIndex;
-                if(int.TryParse(ini.GetKey("General", "GOBCMPIndex", string.Empty), out cmpIndex))
-                {
-                    if (cmpIndex >= 0 && cmpIndex < gobColormap.Items.Count)
-                        gobColormap.SelectedIndex = cmpIndex;
-                }
-            }
+            int cmpIndex = Properties.Settings.Default.GOBCMPIndex;
+            if (cmpIndex >= 0 && cmpIndex < gobColormap.Items.Count)
+                gobColormap.SelectedIndex = cmpIndex;
+
 
 
             // trigger some dumb UI stuff
@@ -213,11 +199,8 @@ namespace Matt
         private void Matt_FormClosing(object sender, FormClosingEventArgs e)
         {
             // save config
-            using (INIFile ini = new INIFile(INIFile))
-            {
-                ini.WriteKey("General", "CMPorGOB", cmpOrGobPath.Text);
-                ini.WriteKey("General", "GOBCMPIndex", gobColormap.SelectedIndex.ToString());
-            }
+            Properties.Settings.Default.CMPorGOB = cmpOrGobPath.Text;
+            Properties.Settings.Default.GOBCMPIndex = gobColormap.SelectedIndex;
         }
 
         private void gobColormap_SelectedIndexChanged(object sender, EventArgs e)
