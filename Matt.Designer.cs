@@ -28,6 +28,7 @@ namespace Matt
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -56,6 +57,8 @@ namespace Matt
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.pictureBox2 = new MattControls.PictureBoxMaterial();
+            this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -343,6 +346,7 @@ namespace Matt
             this.autoselectFormat.Size = new System.Drawing.Size(212, 17);
             this.autoselectFormat.TabIndex = 15;
             this.autoselectFormat.Text = "Autoselect format based on input image";
+            this.toolTip1.SetToolTip(this.autoselectFormat, "When loading a .MAT, automatically select the Material Format based on the file.");
             this.autoselectFormat.UseVisualStyleBackColor = true;
             // 
             // splitContainer1
@@ -365,7 +369,7 @@ namespace Matt
             this.splitContainer1.Panel2.Controls.Add(this.pictureBox2);
             this.splitContainer1.Panel2.Controls.Add(this.previewNeedColormap);
             this.splitContainer1.Size = new System.Drawing.Size(533, 279);
-            this.splitContainer1.SplitterDistance = 265;
+            this.splitContainer1.SplitterDistance = 264;
             this.splitContainer1.TabIndex = 16;
             // 
             // pictureBox1
@@ -377,7 +381,7 @@ namespace Matt
             this.pictureBox1.Location = new System.Drawing.Point(4, 24);
             this.pictureBox1.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(258, 252);
+            this.pictureBox1.Size = new System.Drawing.Size(257, 252);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
@@ -391,10 +395,25 @@ namespace Matt
             this.pictureBox2.Location = new System.Drawing.Point(4, 24);
             this.pictureBox2.Margin = new System.Windows.Forms.Padding(0);
             this.pictureBox2.Name = "pictureBox2";
-            this.pictureBox2.Size = new System.Drawing.Size(256, 252);
+            this.pictureBox2.Size = new System.Drawing.Size(257, 252);
             this.pictureBox2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
+            // 
+            // excludeSelfIlluminated
+            // 
+            this.excludeSelfIlluminated.AutoSize = true;
+            this.excludeSelfIlluminated.Checked = true;
+            this.excludeSelfIlluminated.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.excludeSelfIlluminated.Location = new System.Drawing.Point(337, 64);
+            this.excludeSelfIlluminated.Name = "excludeSelfIlluminated";
+            this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
+            this.excludeSelfIlluminated.TabIndex = 17;
+            this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
+            this.toolTip1.SetToolTip(this.excludeSelfIlluminated, "When encoding 8-bit .MAT, don\'t use colors that would appear glow-in-the-dark in " +
+        "software renderer.");
+            this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
+            this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
             // 
             // Matt
             // 
@@ -402,6 +421,7 @@ namespace Matt
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 460);
+            this.Controls.Add(this.excludeSelfIlluminated);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.autoselectFormat);
             this.Controls.Add(this.logList);
@@ -465,6 +485,8 @@ namespace Matt
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.RadioButton abgr32;
         private System.Windows.Forms.RadioButton bgr24;
+        private System.Windows.Forms.CheckBox excludeSelfIlluminated;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

@@ -151,7 +151,6 @@ namespace Matt
 
             }
 
-            UpdateCMP();
             Reprocess();
 
 
@@ -205,14 +204,13 @@ namespace Matt
 
         private void gobColormap_SelectedIndexChanged(object sender, EventArgs e)
         {
-            UpdateCMP();
             Reprocess();
 
             // enforce redrawing everything now
             Update();
         }
 
-        void UpdateCMP()
+        void UpdateCMP(List<int> usedPaletteIndices)
         {
             Log.Print("UpdateCMP");
 
@@ -229,13 +227,14 @@ namespace Matt
             Bitmap bmp = new Bitmap(width, height);
             using (Graphics gfx = Graphics.FromImage(bmp))
             {
-                FillRectEmpty(gfx, new Rectangle(0, 0, width, height));
+                gfx.FillRectangle(new SolidBrush(Color.FromArgb(16, 16, 16)), new Rectangle(0, 0, width, height));
+                //FillRectEmpty(gfx, new Rectangle(0, 0, width, height));
 
                 for(int i=0; i<256; i++)
                 {
                     Color clr = cmp.Palette[i].Color;
 
-                    const int clrsPerRow = 25;
+                    const int clrsPerRow = 21;
                     float clrSize = (float)width / (float)clrsPerRow;
                     int iX = i % clrsPerRow;
                     int iY = i / clrsPerRow;
@@ -244,10 +243,32 @@ namespace Matt
                     float fY = (float)iY * clrSize;
 
                     RectangleF clrRc = new RectangleF(fX, fY, clrSize, clrSize);
+                    clrRc.Inflate(-2.0f, -2.0f);
                     gfx.FillRectangle(new SolidBrush(clr), clrRc);
 
+
+                    // figure out a good visible inverse color.  if too similar, blow out color channels to force visible.
+                    int iR = 255 - clr.R;
+                    int iG = 255 - clr.G;
+                    int iB = 255 - clr.B;
+
+                    if (Math.Abs(iR - clr.R) < 30)
+                        iR = clr.R < 128 ? 255 : 0;
+                    if (Math.Abs(iG - clr.G) < 30)
+                        iG = clr.G < 128 ? 255 : 0;
+                    if (Math.Abs(iB - clr.B) < 30)
+                        iB = clr.B < 128 ? 255 : 0;
+
+                    Color inverseColor = Color.FromArgb(iR, iG, iB);
+
+
+
+                    if (usedPaletteIndices.Contains(i))
+                        gfx.DrawRectangle(new Pen(inverseColor, 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
+
                     if (i == CurrentColorIndex)
-                        gfx.DrawRectangle(new Pen(Color.FromArgb(255 - clr.R, 255 - clr.G, 255 - clr.B), 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
+                        gfx.DrawLine(new Pen(inverseColor, 1.0f), clrRc.X, clrRc.Y+clrRc.Height, clrRc.X+clrRc.Width, clrRc.Y);
+                    //    gfx.DrawRectangle(new Pen(Color.FromArgb(255 - clr.R, 255 - clr.G, 255 - clr.B), 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
                 }
 
             }
@@ -487,9 +508,6 @@ namespace Matt
                 pictureBox1.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, forceOriginalColormap);
                 originalNeedColormap.Visible = needColormap;
 
-                // we are baking the "colorindex" rectangle into the colormap bitmap for now..  so regenerate it
-                UpdateCMP();
-
                 Reprocess(true);
             }
             catch
@@ -511,15 +529,20 @@ namespace Matt
                 return;
             }
 
-            Material mat = GenerateOutputMat();
+            List<int> usedPaletteIndices;
+            Material mat = GenerateOutputMat(out usedPaletteIndices);
 
             bool needColormap;
             pictureBox2.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
+
+            UpdateCMP(usedPaletteIndices);
         }
 
-        unsafe Material GenerateOutputMat()
+        unsafe Material GenerateOutputMat(out List<int> usedPaletteIndices)
         {
+            usedPaletteIndices = new List<int>();
+
             bool needColormap;
             Bitmap bmp = GenerateBitmap(out needColormap, false, forceOriginalColormap);
             if (bmp == null)
@@ -635,10 +658,16 @@ namespace Matt
                             case Format.Solid: break;
                             case Format.Paletted:
                                 {
+                                    byte val;
                                     if (src[3] == 0)   // if transparent (whats a good threshold?)  write a 0
-                                        *(dst++) = (byte)th.TransparentColorNum;
+                                        val = (byte)th.TransparentColorNum;
                                     else
-                                        *(dst++) = (byte)cmp.FindClosestColor(src[2], src[1], src[0], /*mh.colorIndex*/ 0/*is zero always transparent? if so, never select it for a valid color*/);
+                                        val = (byte)cmp.FindClosestColor(src[2], src[1], src[0], excludeSelfIlluminated.Checked, /*mh.colorIndex*/ 0/*is zero always transparent? if so, never select it for a valid color*/);
+
+                                    *(dst++) = val;
+
+                                    if (!usedPaletteIndices.Contains(val))
+                                        usedPaletteIndices.Add(val);
                                 }
                                 break;
                             default: // RGB(A)
@@ -861,7 +890,8 @@ namespace Matt
         {
             if (filename.EndsWith(".mat", StringComparison.InvariantCultureIgnoreCase))
             {
-                Material mat = GenerateOutputMat();
+                List<int> dummy;
+                Material mat = GenerateOutputMat(out dummy);
                 mat.Save(filename);
             }
             else
@@ -965,6 +995,13 @@ namespace Matt
             });
         }
 
+        private void excludeSelfIlluminated_CheckedChanged(object sender, EventArgs e)
+        {
+            Reprocess();
+
+            // enforce redrawing everything now
+            Update();
+        }
     }
 
     public static class Log

@@ -35,7 +35,7 @@ namespace Smith
             return Name;
         }
 
-        public int FindClosestColor(int r, int g, int b, int skipIndex=-1)
+        public int FindClosestColor(int r, int g, int b, bool skipSelfIlluminated, int skipIndex=-1)
         {
 #if false
             // donno how we are supposed to know what palette entries are taboo:
@@ -50,6 +50,9 @@ namespace Smith
             for (int i=smallestDiffIndex+1; i<256; i++)
             {
                 if (i == skipIndex)
+                    continue;
+
+                if (skipSelfIlluminated && Palette[i].SelfIlluminated)
                     continue;
 
                 int bestDiff = DetermineColorDiff(smallestDiffIndex, r, g, b);
