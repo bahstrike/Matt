@@ -474,16 +474,25 @@ namespace Matt
                 return;
             }
 
-            Log.Print($"Reprocess #{++reprocNum}");
+            try
+            {
+                Cursor.Current = Cursors.WaitCursor;
 
-            List<int> usedPaletteIndices;
-            Material mat = GenerateOutputMat(out usedPaletteIndices);
+                Log.Print($"Reprocess #{++reprocNum}");
 
-            bool needColormap;
-            pictureBox2.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, null/*no override*/, mat);
-            previewNeedColormap.Visible = needColormap;
+                List<int> usedPaletteIndices;
+                Material mat = GenerateOutputMat(out usedPaletteIndices);
 
-            paletteControl1.UpdateCMP(GetCurrentColormap(), CurrentColorIndex, usedPaletteIndices);
+                bool needColormap;
+                pictureBox2.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, null/*no override*/, mat);
+                previewNeedColormap.Visible = needColormap;
+
+                paletteControl1.UpdateCMP(GetCurrentColormap(), CurrentColorIndex, usedPaletteIndices);
+            }
+            finally
+            {
+                Cursor.Current = Cursors.Default;
+            }
         }
 
         unsafe Material GenerateOutputMat(out List<int> usedPaletteIndices)
