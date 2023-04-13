@@ -180,8 +180,11 @@ namespace Matt
             cmpOrGobPath.Text = ofd.FileName;
         }
 
+        bool initialFormLoad = false;
         private void Matt_Load(object sender, EventArgs e)
         {
+            initialFormLoad = true;
+
             // load config
             cmpOrGobPath.Text = Properties.Settings.Default.CMPorGOB;
 
@@ -193,6 +196,11 @@ namespace Matt
 
             // trigger some dumb UI stuff
             format_CheckedChanged(null, new EventArgs());
+
+            initialFormLoad = false;
+
+
+            Reprocess();
         }
 
         private void Matt_FormClosing(object sender, FormClosingEventArgs e)
@@ -519,6 +527,10 @@ namespace Matt
 
         public void Reprocess(bool fromReloadOriginal=false)
         {
+            if (initialFormLoad)
+                return;
+
+
             Log.Print($"Reprocess({fromReloadOriginal})");
 
             // if not from reloadoriginal,  maybe we just want to run that instead.
@@ -795,6 +807,10 @@ namespace Matt
 
         private void format_CheckedChanged(object sender, EventArgs e)
         {
+            // only trigger if enabling check so we dont reprocess twice
+            if (sender != null && !(sender as RadioButton).Checked)
+                return;
+
             bool is8bit = (CurrentFormat == Format.Solid) || (CurrentFormat == Format.Paletted);
 
             colormapGroup.Enabled = is8bit;
