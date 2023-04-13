@@ -39,7 +39,6 @@ namespace Matt
             this.bgr565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
             this.colormapGroup = new System.Windows.Forms.GroupBox();
-            this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.cmpOrGobPath = new System.Windows.Forms.TextBox();
@@ -54,18 +53,19 @@ namespace Matt
             this.logList = new System.Windows.Forms.ListBox();
             this.autoselectFormat = new System.Windows.Forms.CheckBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.pictureBox2 = new MattControls.PictureBoxMaterial();
-            this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
+            this.paletteControl1 = new MattControls.PaletteControl();
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -187,7 +187,7 @@ namespace Matt
             // 
             this.colormapGroup.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.colormapGroup.BackColor = System.Drawing.SystemColors.Control;
-            this.colormapGroup.Controls.Add(this.pictureBox3);
+            this.colormapGroup.Controls.Add(this.paletteControl1);
             this.colormapGroup.Controls.Add(this.label4);
             this.colormapGroup.Controls.Add(this.button2);
             this.colormapGroup.Controls.Add(this.cmpOrGobPath);
@@ -199,17 +199,6 @@ namespace Matt
             this.colormapGroup.TabIndex = 7;
             this.colormapGroup.TabStop = false;
             this.colormapGroup.Text = "Colormap";
-            // 
-            // pictureBox3
-            // 
-            this.pictureBox3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.pictureBox3.Location = new System.Drawing.Point(6, 106);
-            this.pictureBox3.Margin = new System.Windows.Forms.Padding(0);
-            this.pictureBox3.Name = "pictureBox3";
-            this.pictureBox3.Size = new System.Drawing.Size(226, 143);
-            this.pictureBox3.TabIndex = 5;
-            this.pictureBox3.TabStop = false;
-            this.pictureBox3.Paint += new System.Windows.Forms.PaintEventHandler(this.colormap_Paint);
             // 
             // label4
             // 
@@ -369,6 +358,19 @@ namespace Matt
             this.splitContainer1.SplitterDistance = 264;
             this.splitContainer1.TabIndex = 16;
             // 
+            // excludeSelfIlluminated
+            // 
+            this.excludeSelfIlluminated.AutoSize = true;
+            this.excludeSelfIlluminated.Checked = true;
+            this.excludeSelfIlluminated.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.excludeSelfIlluminated.Location = new System.Drawing.Point(337, 64);
+            this.excludeSelfIlluminated.Name = "excludeSelfIlluminated";
+            this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
+            this.excludeSelfIlluminated.TabIndex = 17;
+            this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
+            this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
+            this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -397,18 +399,14 @@ namespace Matt
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
             // 
-            // excludeSelfIlluminated
+            // paletteControl1
             // 
-            this.excludeSelfIlluminated.AutoSize = true;
-            this.excludeSelfIlluminated.Checked = true;
-            this.excludeSelfIlluminated.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.excludeSelfIlluminated.Location = new System.Drawing.Point(337, 64);
-            this.excludeSelfIlluminated.Name = "excludeSelfIlluminated";
-            this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
-            this.excludeSelfIlluminated.TabIndex = 17;
-            this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
-            this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
-            this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
+            this.paletteControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.paletteControl1.Location = new System.Drawing.Point(6, 106);
+            this.paletteControl1.Name = "paletteControl1";
+            this.paletteControl1.Size = new System.Drawing.Size(226, 143);
+            this.paletteControl1.TabIndex = 18;
+            this.paletteControl1.TabStop = false;
             // 
             // Matt
             // 
@@ -437,7 +435,6 @@ namespace Matt
             this.groupBox2.PerformLayout();
             this.colormapGroup.ResumeLayout(false);
             this.colormapGroup.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -446,6 +443,7 @@ namespace Matt
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -466,7 +464,6 @@ namespace Matt
         private System.Windows.Forms.TextBox cmpOrGobPath;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.PictureBox pictureBox3;
         private System.Windows.Forms.Button openButton;
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.RadioButton bitdepthSolid;
@@ -481,6 +478,7 @@ namespace Matt
         private System.Windows.Forms.RadioButton abgr32;
         private System.Windows.Forms.RadioButton bgr24;
         private System.Windows.Forms.CheckBox excludeSelfIlluminated;
+        private MattControls.PaletteControl paletteControl1;
     }
 }
 

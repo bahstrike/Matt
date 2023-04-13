@@ -218,72 +218,6 @@ namespace Matt
             Update();
         }
 
-        void UpdateCMP(List<int> usedPaletteIndices)
-        {
-            Log.Print("UpdateCMP");
-
-            Colormap cmp = GetCurrentColormap();
-            if(cmp == null)
-            {
-                pictureBox3.Image = null;
-                return;
-            }
-
-            int width = pictureBox3.ClientRectangle.Width;
-            int height = pictureBox3.ClientRectangle.Height;
-
-            Bitmap bmp = new Bitmap(width, height);
-            using (Graphics gfx = Graphics.FromImage(bmp))
-            {
-                gfx.FillRectangle(new SolidBrush(Color.FromArgb(16, 16, 16)), new Rectangle(0, 0, width, height));
-                //FillRectEmpty(gfx, new Rectangle(0, 0, width, height));
-
-                for(int i=0; i<256; i++)
-                {
-                    Color clr = cmp.Palette[i].Color;
-
-                    const int clrsPerRow = 21;
-                    float clrSize = (float)width / (float)clrsPerRow;
-                    int iX = i % clrsPerRow;
-                    int iY = i / clrsPerRow;
-
-                    float fX = (float)iX * clrSize;
-                    float fY = (float)iY * clrSize;
-
-                    RectangleF clrRc = new RectangleF(fX, fY, clrSize, clrSize);
-                    clrRc.Inflate(-2.0f, -2.0f);
-                    gfx.FillRectangle(new SolidBrush(clr), clrRc);
-
-
-                    // figure out a good visible inverse color.  if too similar, blow out color channels to force visible.
-                    int iR = 255 - clr.R;
-                    int iG = 255 - clr.G;
-                    int iB = 255 - clr.B;
-
-                    if (Math.Abs(iR - clr.R) < 30)
-                        iR = clr.R < 128 ? 255 : 0;
-                    if (Math.Abs(iG - clr.G) < 30)
-                        iG = clr.G < 128 ? 255 : 0;
-                    if (Math.Abs(iB - clr.B) < 30)
-                        iB = clr.B < 128 ? 255 : 0;
-
-                    Color inverseColor = Color.FromArgb(iR, iG, iB);
-
-
-
-                    if (usedPaletteIndices.Contains(i))
-                        gfx.DrawRectangle(new Pen(inverseColor, 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
-
-                    if (i == CurrentColorIndex)
-                        gfx.DrawLine(new Pen(inverseColor, 1.0f), clrRc.X, clrRc.Y+clrRc.Height, clrRc.X+clrRc.Width, clrRc.Y);
-                    //    gfx.DrawRectangle(new Pen(Color.FromArgb(255 - clr.R, 255 - clr.G, 255 - clr.B), 1.0f), clrRc.X, clrRc.Y, clrRc.Width, clrRc.Height);
-                }
-
-            }
-
-            pictureBox3.Image = bmp;
-        }
-
         public string OpenedImageFilePath = string.Empty;
         public bool OpenedBMP_ARGB = false;//flag to force using custom BMP load routine;  .NET doesnt support loading alpha channel, even though Bitmap does support it.. :P
         public bool OpenedMAT
@@ -549,7 +483,7 @@ namespace Matt
             pictureBox2.Image = GenerateBitmap(out needColormap, fillTransparent.Checked, null/*no override*/, mat);
             previewNeedColormap.Visible = needColormap;
 
-            UpdateCMP(usedPaletteIndices);
+            paletteControl1.UpdateCMP(GetCurrentColormap(), CurrentColorIndex, usedPaletteIndices);
         }
 
         unsafe Material GenerateOutputMat(out List<int> usedPaletteIndices)
