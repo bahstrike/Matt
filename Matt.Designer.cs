@@ -28,7 +28,6 @@ namespace Matt
         /// </summary>
         private void InitializeComponent()
         {
-            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -58,7 +57,6 @@ namespace Matt
             this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.pictureBox2 = new MattControls.PictureBoxMaterial();
             this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
-            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -346,7 +344,6 @@ namespace Matt
             this.autoselectFormat.Size = new System.Drawing.Size(212, 17);
             this.autoselectFormat.TabIndex = 15;
             this.autoselectFormat.Text = "Autoselect format based on input image";
-            this.toolTip1.SetToolTip(this.autoselectFormat, "When loading a .MAT, automatically select the Material Format based on the file.");
             this.autoselectFormat.UseVisualStyleBackColor = true;
             // 
             // splitContainer1
@@ -410,8 +407,6 @@ namespace Matt
             this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
             this.excludeSelfIlluminated.TabIndex = 17;
             this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
-            this.toolTip1.SetToolTip(this.excludeSelfIlluminated, "When encoding 8-bit .MAT, don\'t use colors that would appear glow-in-the-dark in " +
-        "software renderer.");
             this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
             this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
             // 
@@ -486,7 +481,6 @@ namespace Matt
         private System.Windows.Forms.RadioButton abgr32;
         private System.Windows.Forms.RadioButton bgr24;
         private System.Windows.Forms.CheckBox excludeSelfIlluminated;
-        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 

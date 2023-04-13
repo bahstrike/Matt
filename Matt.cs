@@ -525,13 +525,12 @@ namespace Matt
             }
         }
 
+        int reprocNum = 0;
+
         public void Reprocess(bool fromReloadOriginal=false)
         {
             if (initialFormLoad)
                 return;
-
-
-            Log.Print($"Reprocess({fromReloadOriginal})");
 
             // if not from reloadoriginal,  maybe we just want to run that instead.
             // could be optimized if only changing output settings.. but who cares PCs are fast now
@@ -540,6 +539,8 @@ namespace Matt
                 ReloadOriginal();
                 return;
             }
+
+            Log.Print($"Reprocess #{++reprocNum}");
 
             List<int> usedPaletteIndices;
             Material mat = GenerateOutputMat(out usedPaletteIndices);
