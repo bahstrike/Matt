@@ -39,6 +39,7 @@ namespace Matt
             this.bgr565 = new System.Windows.Forms.RadioButton();
             this.bitdepth8 = new System.Windows.Forms.RadioButton();
             this.colormapGroup = new System.Windows.Forms.GroupBox();
+            this.paletteControl1 = new MattControls.PaletteControl();
             this.label4 = new System.Windows.Forms.Label();
             this.button2 = new System.Windows.Forms.Button();
             this.cmpOrGobPath = new System.Windows.Forms.TextBox();
@@ -53,19 +54,19 @@ namespace Matt
             this.logList = new System.Windows.Forms.ListBox();
             this.autoselectFormat = new System.Windows.Forms.CheckBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
             this.pictureBox1 = new MattControls.PictureBoxMaterial();
             this.pictureBox2 = new MattControls.PictureBoxMaterial();
-            this.paletteControl1 = new MattControls.PaletteControl();
+            this.excludeSelfIlluminated = new System.Windows.Forms.CheckBox();
+            this.dither = new System.Windows.Forms.CheckBox();
             this.groupBox2.SuspendLayout();
             this.colormapGroup.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -199,6 +200,15 @@ namespace Matt
             this.colormapGroup.TabIndex = 7;
             this.colormapGroup.TabStop = false;
             this.colormapGroup.Text = "Colormap";
+            // 
+            // paletteControl1
+            // 
+            this.paletteControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.paletteControl1.Location = new System.Drawing.Point(6, 106);
+            this.paletteControl1.Name = "paletteControl1";
+            this.paletteControl1.Size = new System.Drawing.Size(226, 143);
+            this.paletteControl1.TabIndex = 18;
+            this.paletteControl1.TabStop = false;
             // 
             // label4
             // 
@@ -358,19 +368,6 @@ namespace Matt
             this.splitContainer1.SplitterDistance = 264;
             this.splitContainer1.TabIndex = 16;
             // 
-            // excludeSelfIlluminated
-            // 
-            this.excludeSelfIlluminated.AutoSize = true;
-            this.excludeSelfIlluminated.Checked = true;
-            this.excludeSelfIlluminated.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.excludeSelfIlluminated.Location = new System.Drawing.Point(337, 64);
-            this.excludeSelfIlluminated.Name = "excludeSelfIlluminated";
-            this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
-            this.excludeSelfIlluminated.TabIndex = 17;
-            this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
-            this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
-            this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -399,14 +396,29 @@ namespace Matt
             this.pictureBox2.TabIndex = 2;
             this.pictureBox2.TabStop = false;
             // 
-            // paletteControl1
+            // excludeSelfIlluminated
             // 
-            this.paletteControl1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.paletteControl1.Location = new System.Drawing.Point(6, 106);
-            this.paletteControl1.Name = "paletteControl1";
-            this.paletteControl1.Size = new System.Drawing.Size(226, 143);
-            this.paletteControl1.TabIndex = 18;
-            this.paletteControl1.TabStop = false;
+            this.excludeSelfIlluminated.AutoSize = true;
+            this.excludeSelfIlluminated.Checked = true;
+            this.excludeSelfIlluminated.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.excludeSelfIlluminated.Location = new System.Drawing.Point(337, 64);
+            this.excludeSelfIlluminated.Name = "excludeSelfIlluminated";
+            this.excludeSelfIlluminated.Size = new System.Drawing.Size(195, 17);
+            this.excludeSelfIlluminated.TabIndex = 17;
+            this.excludeSelfIlluminated.Text = "Exclude self-illuminated colors (8-bit)";
+            this.excludeSelfIlluminated.UseVisualStyleBackColor = true;
+            this.excludeSelfIlluminated.CheckedChanged += new System.EventHandler(this.excludeSelfIlluminated_CheckedChanged);
+            // 
+            // dither
+            // 
+            this.dither.AutoSize = true;
+            this.dither.Location = new System.Drawing.Point(337, 87);
+            this.dither.Name = "dither";
+            this.dither.Size = new System.Drawing.Size(83, 17);
+            this.dither.TabIndex = 18;
+            this.dither.Text = "Dither (8-bit)";
+            this.dither.UseVisualStyleBackColor = true;
+            this.dither.CheckedChanged += new System.EventHandler(this.dither_CheckedChanged);
             // 
             // Matt
             // 
@@ -414,6 +426,7 @@ namespace Matt
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 460);
+            this.Controls.Add(this.dither);
             this.Controls.Add(this.excludeSelfIlluminated);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.autoselectFormat);
@@ -435,6 +448,7 @@ namespace Matt
             this.groupBox2.PerformLayout();
             this.colormapGroup.ResumeLayout(false);
             this.colormapGroup.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).EndInit();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
@@ -443,7 +457,6 @@ namespace Matt
             this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.paletteControl1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -479,6 +492,7 @@ namespace Matt
         private System.Windows.Forms.RadioButton bgr24;
         private System.Windows.Forms.CheckBox excludeSelfIlluminated;
         private MattControls.PaletteControl paletteControl1;
+        private System.Windows.Forms.CheckBox dither;
     }
 }
 

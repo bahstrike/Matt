@@ -574,6 +574,8 @@ namespace Matt
             Material.TextureHeader th = new Material.TextureHeader();
             mat.Textures.Add(th);
 
+            bool useDithering = dither.Checked;
+
             // precache dimensions since the property accessor is horrendously slow
             int bmpWidth = bmp.Width;
             int bmpHeight = bmp.Height;
@@ -591,7 +593,7 @@ namespace Matt
             {
                 byte* dst = _dst;
 
-                BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, bmpWidth, bmpHeight), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                BitmapData bmdat = bmp.LockBits(new Rectangle(0, 0, bmpWidth, bmpHeight), ImageLockMode.ReadWrite, PixelFormat.Format32bppArgb);
 
                 // would be faster to have loops for each format rather than embedding a switch() in deepest loop..  but lazy
                 for(int y=0; y<bmpHeight; y++)
@@ -606,7 +608,8 @@ namespace Matt
                             case Format.Paletted:
                                 {
                                     byte val;
-                                    if (src[3] == 0)   // if transparent (whats a good threshold?)  write a 0
+                                    bool transparent = (src[3] == 0);   // if transparent (whats a good threshold?)  write a 0
+                                    if (transparent)   // if transparent (whats a good threshold?)  write a 0
                                         val = (byte)th.TransparentColorNum;
                                     else
                                         val = (byte)cmp.FindClosestColor(src[2], src[1], src[0], excludeSelfIlluminated.Checked, /*mh.colorIndex*/ 0/*is zero always transparent? if so, never select it for a valid color*/);
@@ -615,6 +618,20 @@ namespace Matt
 
                                     if (!usedPaletteIndices.Contains(val))
                                         usedPaletteIndices.Add(val);
+
+
+                                    // dither?
+                                    if(useDithering && !transparent)
+                                    {
+                                        // Floyd–Steinberg
+                                        WorkColor newClr = cmp.Palette[val];
+                                        WorkColor error = Color.FromArgb(src[2], src[1], src[0]) - newClr;
+
+                                        DitherHelper(bmdat, x + 1, y, error * 7.0 / 16.0);
+                                        DitherHelper(bmdat, x - 1, y + 1, error * 3.0 / 16.0);
+                                        DitherHelper(bmdat, x, y + 1, error * 5.0 / 16.0);
+                                        DitherHelper(bmdat, x + 1, y + 1, error * 1.0 / 16.0);
+                                    }
                                 }
                                 break;
                             default: // RGB(A)
@@ -646,6 +663,31 @@ namespace Matt
             th.MipmapData.Add(mipData);
 
             return mat;
+        }
+
+        private unsafe static void DitherHelper(BitmapData bmdat, int x, int y, WorkColor error)
+        {
+            // slow; should be precached
+            int w = bmdat.Width;
+            int h = bmdat.Height;
+
+            if (x < 0 || x >= w || y < 0 || y >= h)
+                return;
+
+            byte* src = (byte*)((long)bmdat.Scan0 + (long)(y * bmdat.Stride)) + (x*4);
+
+            WorkColor clr = Color.FromArgb(src[3], src[2], src[1], src[0]);
+
+            // dont affect if transparent
+            if (clr.Transparent)
+                return;
+
+            Color newClr = clr + error;
+
+            src[3] = newClr.A;
+            src[2] = newClr.R;
+            src[1] = newClr.G;
+            src[0] = newClr.B;
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -947,6 +989,14 @@ namespace Matt
         }
 
         private void excludeSelfIlluminated_CheckedChanged(object sender, EventArgs e)
+        {
+            Reprocess();
+
+            // enforce redrawing everything now
+            Update();
+        }
+
+        private void dither_CheckedChanged(object sender, EventArgs e)
         {
             Reprocess();
 
