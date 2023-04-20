@@ -30,15 +30,6 @@ _NOTE: readme content/screenshots may be out-of-date, but still representative_
 * Use fuchsia _(255/0/255)_ on incoming standard image files as an optional automatic transparency pixel value
 
 
-#### History
-The editing community has long relied on `MatMaster` for 8-bit textures and multi-cel support, and  `Mat16` for 16-bit textures.
-There has never been a single program that combines support for both.
-
-Unfortunately, `MatMaster` was built under a development environment that is not supported under Windows 10;  stripping the editing community of a modern means for handling custom 8-bit textures.
-
-This application attempts to solve these deficiencies whilst also improving ease-of-use.
-
-
 #### Development
 **Matt** implements the .MAT specification as elicited from JKSpecs, BoBo Fett's "mat-16 spec", smlu's contributions, shiny's contributions, and personal research.
 
