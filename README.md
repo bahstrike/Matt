@@ -82,14 +82,18 @@ This is useful when having loaded an existing 8-bit .MAT that you want to save a
 
 After you have loaded the .MAT file and found its appropriate colormap, click `Keep Current Colormap`  and any further colormap selections will only affect the output.
 
-
-#### [ ] `Show transparent as fuchsia` _(checkbox)_
+#### [X] `Show transparent as fuchsia` _(checkbox)_
 Toggle whether to fill transparent pixels as pink, or let the  "invalid image area"  background lines show through.
 
 This is purely visual and has no effect on file output.
 
-
-#### [ ] `Autoselect format based on input image` _(checkbox)_
+#### [X] `Autoselect format based on input image` _(checkbox)_
 Toggle whether to automatically change the `Material Format` options based upon the file you have loaded.
 
 This is useful to turn off when you want to lock-in your output settings, and drag a bunch of random files in.
+
+#### [X] `Exclude self-illuminated colors (8-bit)` _(checkbox)_
+Prevents using .CMP colors that have the same RGB value at min/max light level. This protects various texels from glowing in the dark when using software renderer.
+
+#### [_] `Dither (8-bit)` _(checkbox)_
+Applies a Floyd-Steinberg dithering algorithm while conforming an image to .CMP palette. Typically not needed, but available as an option for suboptimal image imports.
