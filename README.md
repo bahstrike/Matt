@@ -20,6 +20,8 @@ _NOTE: readme content/screenshots may be out-of-date, but still representative_
 * Supports 16-bit MATs
   * format 565RGB  _(best color)_
   * format 1555ARGB  _(supports transparency)_
+  * format 4444ABGR _(indy only)_
+* Supports 24-bit and 32-bit MATs _(DUNNO YET GOTTA FILL IN)_
 
 
 #### Missing/Pending Features
