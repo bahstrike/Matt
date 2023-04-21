@@ -21,7 +21,7 @@ _NOTE: readme content/screenshots may be out-of-date, but still representative_
   * format 565RGB  _(best color)_
   * format 1555ARGB  _(supports transparency)_
   * format 4444ABGR _(indy only)_
-* Supports 24-bit and 32-bit MATs _(DUNNO YET GOTTA FILL IN)_
+* Supports 24-bit and 32-bit MATs _(3rd party expansions)_
 
 
 #### Missing/Pending Features
