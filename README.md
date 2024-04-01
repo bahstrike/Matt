@@ -20,6 +20,8 @@ _NOTE: readme content/screenshots may be out-of-date, but still representative_
 * Supports 16-bit MATs
   * format 565RGB  _(best color)_
   * format 1555ARGB  _(supports transparency)_
+  * format 4444ABGR _(indy only)_
+* Supports 24-bit and 32-bit MATs _(3rd party expansions)_
 
 
 #### Missing/Pending Features
@@ -28,15 +30,6 @@ _NOTE: readme content/screenshots may be out-of-date, but still representative_
 * Control 8-bit _transparency_ fileformat field
 * Control 8-bit _color index_ fileformat field
 * Use fuchsia _(255/0/255)_ on incoming standard image files as an optional automatic transparency pixel value
-
-
-#### History
-The editing community has long relied on `MatMaster` for 8-bit textures and multi-cel support, and  `Mat16` for 16-bit textures.
-There has never been a single program that combines support for both.
-
-Unfortunately, `MatMaster` was built under a development environment that is not supported under Windows 10;  stripping the editing community of a modern means for handling custom 8-bit textures.
-
-This application attempts to solve these deficiencies whilst also improving ease-of-use.
 
 
 #### Development
@@ -89,14 +82,18 @@ This is useful when having loaded an existing 8-bit .MAT that you want to save a
 
 After you have loaded the .MAT file and found its appropriate colormap, click `Keep Current Colormap`  and any further colormap selections will only affect the output.
 
-
-#### [ ] `Show transparent as fuchsia` _(checkbox)_
+#### [X] `Show transparent as fuchsia` _(checkbox)_
 Toggle whether to fill transparent pixels as pink, or let the  "invalid image area"  background lines show through.
 
 This is purely visual and has no effect on file output.
 
-
-#### [ ] `Autoselect format based on input image` _(checkbox)_
+#### [X] `Autoselect format based on input image` _(checkbox)_
 Toggle whether to automatically change the `Material Format` options based upon the file you have loaded.
 
 This is useful to turn off when you want to lock-in your output settings, and drag a bunch of random files in.
+
+#### [X] `Exclude self-illuminated colors (8-bit)` _(checkbox)_
+Prevents using .CMP colors that have the same RGB value at min/max light level. This protects various texels from glowing in the dark when using software renderer.
+
+#### [_] `Dither (8-bit)` _(checkbox)_
+Applies a Floyd-Steinberg dithering algorithm while conforming an image to .CMP palette. Typically not needed, but available as an option for suboptimal image imports.
